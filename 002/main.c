@@ -1,4 +1,6 @@
 #include <stdio.h>
+//002 矩陣運算 Matrix_Operation
+//2019/02/24 IBOTIAndy
 void outputM(int matrix[][10]){             //印出整個陣列[10][10]
     int i,j;
     for(i=0; i<10; i++){
