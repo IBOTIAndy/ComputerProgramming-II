@@ -12,7 +12,7 @@ void input001(int checkerboard[][10]){
     }
 }
 //---------/input-----run----------
-int updown(table[][10], int x, int y){
+int selectUpDown(int table[][10], int x, int y){
     int i = 0, n = 0, haveFlag = 0;
     if(y < 4){
         n = y;
@@ -34,7 +34,7 @@ int updown(table[][10], int x, int y){
     else{
         n = 4;
     }
-    for(i = 1; i < n; i++){
+    for(i = 1; i <= n; i++){
         if(table[y + i][x] == 1){
             haveFlag++;
         }
@@ -44,7 +44,7 @@ int updown(table[][10], int x, int y){
     }
     return haveFlag;
 }
-int RightLift(table[][10], int x, int y){
+int selectRightLift(int table[][10], int x, int y){
     int i = 0, n = 0, haveFlag = 0;
     if(x < 4){
         n = x;
@@ -53,7 +53,7 @@ int RightLift(table[][10], int x, int y){
         n = 4;
     }
     for(i = 1; i < n + 1; i++){
-        if(table[y][x - 1] == 1){
+        if(table[y][x - i] == 1){
             haveFlag++;
         }
         else{
@@ -66,7 +66,7 @@ int RightLift(table[][10], int x, int y){
     else{
         n = 4;
     }
-    for(i = 1; i < n; i++){
+    for(i = 1; i <= n; i++){
         if(table[y][x + i] == 1){
             haveFlag++;
         }
@@ -81,14 +81,21 @@ int RightLift(table[][10], int x, int y){
 
 
 void run(int table[][10], int x, int y){
-    for()
+    int flag = 0;
+    flag += selectUpDown(table, x, y);
+    flag += selectRightLift(table, x, y);
+    if(flag >= 4){
+        printf("%d %d\n", y, x);
+    }
 }
 
 void select(int table[][10]){
     int y = 0, x = 0;
     for(y = 0; y < 10; y++){
         for(x = 0; x < 10; x++){
-            run(table, x, y);
+            if(table[y][x] == 0){
+                run(table, x, y);
+            }
         }
     }
 }
@@ -119,8 +126,8 @@ void testinput001(int checkerboard[][10]){
 //----------/test----------
 void main(){
     int checkerboard[10][10] = {0};
-    //input001(checkerboard);
-    testinput001(checkerboard);
-    testArray2Output(checkerboard, 10, 10);
+    input001(checkerboard);
+    //testinput001(checkerboard);
+    //testArray2Output(checkerboard, 10, 10);
     select(checkerboard);
 }
