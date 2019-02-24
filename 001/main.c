@@ -81,12 +81,18 @@ int selectRightLift(int table[][10], int x, int y){
 
 
 void run(int table[][10], int x, int y){
-    int flag = 0;
-    flag += selectUpDown(table, x, y);
-    flag += selectRightLift(table, x, y);
-    if(flag >= 4){
+    if(selectUpDown(table, x, y) >= 4){
         printf("%d %d\n", y, x);
     }
+    else if(selectRightLift(table, x, y) >= 4){
+        printf("%d %d\n", y, x);
+    }
+    //else if(selectLiftUpRightDown(table, x, y) >= 4){
+    //    printf("%d %d\n", y, x);
+    //}
+    //else if(selectRightUpLiftDown(table, x, y) >= 4){
+    //    printf("%d %d\n", y, x);
+    //}
 }
 
 void select(int table[][10]){
@@ -113,21 +119,18 @@ void testArray2Output(int array2[][10], int y, int x){
 }
 
 void testinput001(int checkerboard[][10]){
-    checkerboard[0][8] = 1; checkerboard[1][6] = 1;
-    checkerboard[1][7] = 1; checkerboard[2][6] = 1;
-    checkerboard[3][6] = 1; checkerboard[3][7] = 1;
-    checkerboard[3][8] = 1; checkerboard[3][9] = 1;
-    checkerboard[4][4] = 1; checkerboard[4][6] = 1;
-    checkerboard[6][3] = 1; checkerboard[7][3] = 1;
-    checkerboard[8][2] = 1; checkerboard[8][3] = 1;
-    checkerboard[8][4] = 1; checkerboard[8][5] = 1;
-    checkerboard[9][3] = 1;
+    checkerboard[1][1] = 1; checkerboard[2][1] = 1;
+    checkerboard[1][2] = 1; checkerboard[2][2] = 1;
+    checkerboard[1][3] = 1; checkerboard[2][3] = 1;
+    checkerboard[1][4] = 1; checkerboard[3][1] = 1;
+    checkerboard[4][1] = 1; checkerboard[3][2] = 1;
+    checkerboard[4][4] = 1; checkerboard[5][5] = 1;
 }
 //----------/test----------
 void main(){
     int checkerboard[10][10] = {0};
-    input001(checkerboard);
-    //testinput001(checkerboard);
-    //testArray2Output(checkerboard, 10, 10);
+    //input001(checkerboard);
+    testinput001(checkerboard);
+    testArray2Output(checkerboard, 10, 10);
     select(checkerboard);
 }
