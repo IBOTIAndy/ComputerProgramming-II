@@ -1,6 +1,6 @@
 #include <stdio.h>
-//001 五子棋   [Y][X]
-//2019/02/23
+//001 五子棋_Gomoku   [Y][X]
+//2019/02/24 IBOTIAndy
 
 //----------input----------
 void input001(int checkerboard[][10]){
@@ -118,7 +118,48 @@ int selectLiftUpRightDown(int table[][10], int x, int y){
     }
     return haveFlag;
 }
-
+int selectRightUpLiftDown(int table[][10], int x, int y){
+    int i = 0, n = 0, haveFlag = 0;
+    if(y < 4 || x > 5){
+        if(y < 9 - x){
+            n = y;
+        }
+        else{
+            n = 9 - x;
+        }
+    }
+    else{
+        n = 4;
+    }
+    for(i = 1; i < n + 1; i++){
+        if(table[y - i][x + i] == 1){
+            haveFlag++;
+        }
+        else{
+            break;
+        }
+    }
+    if(x < 4 || y > 5){
+        if(x < 9 - y){
+            n = x;
+        }
+        else{
+            n = 9 - y;
+        }
+    }
+    else{
+        n = 4;
+    }
+    for(i = 1; i <= n; i++){
+        if(table[y + i][x - i] == 1){
+            haveFlag++;
+        }
+        else{
+            break;
+        }
+    }
+    return haveFlag;
+}
 
 
 void run(int table[][10], int x, int y){
@@ -131,9 +172,9 @@ void run(int table[][10], int x, int y){
     else if(selectLiftUpRightDown(table, x, y) >= 4){
         printf("%d %d\n", y, x);
     }
-    //else if(selectRightUpLiftDown(table, x, y) >= 4){
-    //    printf("%d %d\n", y, x);
-    //}
+    else if(selectRightUpLiftDown(table, x, y) >= 4){
+        printf("%d %d\n", y, x);
+    }
 }
 
 void select(int table[][10]){
