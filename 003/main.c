@@ -10,11 +10,15 @@ void cutInt(int X, int longNumber[]){
     }
 }
 
-void input(int longNumber[]){
-    int inX = 0;
-    scanf("%d", &inX);
-    cutInt(inX, longNumber);
+void input(int *Number){
+    scanf("%d", Number);
+//    if(inX1 < inX2){
+//        inY = inX1;
+//        inX1 = inX2;
+//        inX2 = inY;
+//    }
 }
+
 
 int longNumberMath(int type, int Num1, int Num2, int *Carry){
     int ans;
@@ -32,25 +36,52 @@ int longNumberMath(int type, int Num1, int Num2, int *Carry){
         }                           //
         ans = Num1 - Num2;      //
     }
-    else if(type == 2){ //乘法
-        ans = Num1 * Num2 + *Carry;
-        *Carry = ans / 10;
-        ans = ans % 10;
-    }
-
     return ans;
 }
-
-void run(int longNumber1[], int longNumber2[], int addans[], int subans[], int mulans[]){
+void isNegative(int *Number1, int *Number2, int *Negative){
+    int x = 0;
+    *Negative = 0;
+    if(Number1 < Number2){
+        x = *Number1;
+        *Number1 = *Number2;
+        *Number2 = x;
+        *Negative = 1;
+    }
+}
+void run(int Number1, int Number2, int *Negative, int addans[], int subans[], int mulans[]){
+    int longNumber1[60] = {0}, longNumber2[60] = {0};
     int i = 0;
-    int addCarry = 0;
-    int subCarry = 0;
-    int mulCarry = 0;
+    int addCarry = 0, subCarry = 0, mulCarry = 0;
+    isNegative(&Number1, &Number2, Negative);
+    cutInt(Number1, longNumber1);
+    cutInt(Number2, longNumber2);
     for(i=0; i<60; i++){
         addans[i] = longNumberMath(0, longNumber1[i], longNumber2[i], &addCarry);
         subans[i] = longNumberMath(1, longNumber1[i], longNumber2[i], &subCarry);
-        mulans[i] = longNumberMath(2, longNumber1[i], longNumber2[i], &mulCarry);
+        //lmulans[i] = longNumberMath(2, longNumber1[i], longNumber2[i], &mulCarry);
     }
+}
+void longOutput(int ans[], int n){  //輸出長整數
+    int i = 0;
+    for(i = n; i > 0; i--){     //輸出去除0的部分
+        if(ans[i - 1] != 0){    //當找到第一個不是0的數時
+            break;              //離開迴圈
+        }
+    }
+    while(i > 0){                   //將剩下的輸出完
+        printf("%d", ans[i - 1]);
+        i = i - 1;
+    }
+    printf("\n");   //結束時，換行
+}
+
+void output(int addans[], int negative, int subans[], int mulans[]){
+    longOutput(addans, 60); //加法輸出
+    if(negative == 1){      //如果第一次輸入小於第二次輸入
+        printf("-");        //減法輸出前，先輸出負數
+    }
+    longOutput(subans, 60); //減法輸出
+    //longOutput(mulans, 60); //乘法輸出
 }
 
 void testLongNumberOutput(int NumberArray[], int n){
@@ -65,26 +96,23 @@ void testLongNumberOutput(int NumberArray[], int n){
     printf("\n");
 }
 
-void testinput003(int NumberArray1[], int NumberArray2[]){
-    NumberArray1[0] = 8;    NumberArray1[1] = 4;    NumberArray1[2] = 4;
-    NumberArray1[3] = 8;    NumberArray1[4] = 7;    NumberArray1[5] = 9;
-    NumberArray1[6] = 6;    NumberArray1[7] = 8;    NumberArray1[8] = 1;
-    NumberArray2[0] = 4;    NumberArray2[1] = 4;    NumberArray2[2] = 2;
-    NumberArray2[3] = 2;    NumberArray2[4] = 1;    NumberArray2[5] = 3;
-    NumberArray2[6] = 4;    NumberArray2[7] = 8;    NumberArray2[8] = 4;
+void testinput003(int *Number1, int *Number2){
+    *Number1 = 186978448;
+    *Number2 = 484312244;
 }
 
 void main(){
-    int longNumber1[60] = {0}, longNumber2[60] = {0};
     int addans[60] = {0}, subans[60] = {0}, mulans[60] = {0};
-    //input(longNumber1);
-    testinput003(longNumber1, longNumber2);
+    int number1 = 0, number2 = 0;
+    int negative = 0;
+    input(&number1);
+    input(&number2);
+    //testinput003(&number1, &number2);
     //testLongNumberOutput(longNumber1, 60);
     //testLongNumberOutput(longNumber2, 60);
-    run(longNumber1, longNumber2, addans, subans, mulans);
-    testLongNumberOutput(addans, 60);
-    testLongNumberOutput(subans, 60);
-    testLongNumberOutput(mulans, 60);
-    //output();
-
+    run(number1, number2, &negative, addans, subans, mulans);
+    //testLongNumberOutput(addans, 60);
+    //testLongNumberOutput(subans, 60);
+    //testLongNumberOutput(mulans, 60);
+    output(addans, negative, subans, mulans);
 }
