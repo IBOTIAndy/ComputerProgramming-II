@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <string.h>
+#include <string.h> //測試資料輸入名字用
+#include <math.h>
 //004 計算總成績、平均、排名
 //2019/03/05 IBOTIAndy
 typedef struct{
@@ -47,7 +48,6 @@ void outputLeaderboard(student students[], int n){
 }
 //-----
 void outputFloatGrade(float ans){
-    ans = (int)((ans * 100) + 0.5) / 100.0;
     printf("%.2f\n", ans);
 }
 //----/output-----
@@ -76,6 +76,11 @@ void ranking(student students[], int n){
     }
 }
 //-----
+float floatroundingdot2(float ans){
+    ans = (int)((ans * 100) + 0.5) / 100.0;
+    return ans;
+}
+
 float gradesAverage(student students[], int n){
     int i=0;
     float grade1ans=0, grade2ans=0, grade3ans=0, gradesumans=0;
@@ -89,14 +94,14 @@ float gradesAverage(student students[], int n){
     grade2ans = grade2ans / n;
     grade3ans = grade3ans / n;
     gradesumans = gradesumans / n;
-    outputFloatGrade(grade1ans);
-    outputFloatGrade(grade2ans);
-    outputFloatGrade(grade3ans);
-    outputFloatGrade(gradesumans);
-    return gradesumans;
+    outputFloatGrade(floatroundingdot2(grade1ans));
+    outputFloatGrade(floatroundingdot2(grade2ans));
+    outputFloatGrade(floatroundingdot2(grade3ans));
+    outputFloatGrade(floatroundingdot2(gradesumans));
+    return floatroundingdot2(gradesumans);
 }
 //-----
-int gradesumMedian(student students[], int n){
+float gradesumMedian(student students[], int n){
     int Median=0;
     float ans=0;
     int i=0;
@@ -115,25 +120,41 @@ int gradesumMedian(student students[], int n){
             }
         }
     }
-    return ans;
+    return floatroundingdot2(ans);
 }
 //-----
-//void gradesumSD(student students[], int n){
-//
-//}
-//void gradesumVariance(student students[], int n){
-//
-//}
+float gradesumVariance(student students[], float sumAverage, int n){
+    int i=0;
+    float ans=0;
+    for(i=0; i < n; i++){
+        ans = ans + (students[i].gradesum - sumAverage) * (students[i].gradesum - sumAverage);
+    }
+    ans = ans / (n);
+    return floatroundingdot2(ans);
+}
+float gradesumSD(student students[], float sumVariance, int n){
+    float ans=0;
+    ans = sqrt(sumVariance);
+    return floatroundingdot2(ans);
+}
 
 void gradeMath(student students[], int n){
-    float gradesum=0;
+    float sumAverage=0;
+    float sumMedian=0;
+    float sumVariance=0;
+    float sumSD=0;
+    float morethenMediansum=0;
+    float lessthenMediansum=0;
     everyoneGradesum(students, n);                      //計算每個人的總成績
     ranking(students, n);                               //計算名次
     outputLeaderboard(students, n);                     //依照排名輸出
-    gradesum = gradesAverage(students, n);              //計算每個成績的平均
-    outputFloatGrade(gradesumMedian(students, n));      //Median 中位數
-    //outputFloatGrade(gradesumVariance(students, n));    //Variance 變異數
-    //outputFloatGrade(gradesumSD(students, n));          //SD = Standard Deviation 標準差
+    sumAverage = gradesAverage(students, n);              //計算每個成績的平均
+    sumMedian = gradesumMedian(students, n);                        //Median 中位數
+    sumVariance = gradesumVariance(students, sumAverage, n);                      //Variance 變異數
+    sumSD = gradesumSD(students, sumVariance, n);
+    outputFloatGrade(sumMedian);
+    outputFloatGrade(sumVariance);
+    outputFloatGrade(sumSD);          //SD = Standard Deviation 標準差
 }
 //----/gradeMath-----
 
