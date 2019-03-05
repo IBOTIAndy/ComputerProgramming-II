@@ -45,10 +45,15 @@ void outputLeaderboard(student students[], int n){
         }
     }
 }
+//-----
+void outputFloatGrade(float ans){
+    ans = (int)((ans * 100) + 0.5) / 100.0;
+    printf("%.2f\n", ans);
+}
 //----/output-----
 
 //-----gradeMath-----
-void everybodyGradesum(student students[], int n){
+void everyoneGradesum(student students[], int n){
     int i=0;
     for(i=0; i < n; i++){
         students[i].gradesum = students[i].grade1 + students[i].grade2 + students[i].grade3;
@@ -70,11 +75,65 @@ void ranking(student students[], int n){
         students[first].rank = i + 1;
     }
 }
+//-----
+float gradesAverage(student students[], int n){
+    int i=0;
+    float grade1ans=0, grade2ans=0, grade3ans=0, gradesumans=0;
+    for(i=0; i < n; i++){
+        grade1ans = grade1ans + students[i].grade1;
+        grade2ans = grade2ans + students[i].grade2;
+        grade3ans = grade3ans + students[i].grade3;
+        gradesumans = gradesumans + students[i].gradesum;
+    }
+    grade1ans = grade1ans / n;
+    grade2ans = grade2ans / n;
+    grade3ans = grade3ans / n;
+    gradesumans = gradesumans / n;
+    outputFloatGrade(grade1ans);
+    outputFloatGrade(grade2ans);
+    outputFloatGrade(grade3ans);
+    outputFloatGrade(gradesumans);
+    return gradesumans;
+}
+//-----
+int gradesumMedian(student students[], int n){
+    int Median=0;
+    float ans=0;
+    int i=0;
+    Median = n / 2 + 1;
+    if(n % 2 == 0){
+        for(i=0; i < n; i++){
+            if(students[i].rank == Median - 1 || students[i].rank == Median){
+                ans = ans + students[i].gradesum;
+            }
+        }
+    }
+    else{
+        for(i=0; i < n; i++){
+            if(students[i].rank == Median){
+                ans = students[i].gradesum;
+            }
+        }
+    }
+    return ans;
+}
+//-----
+//void gradesumSD(student students[], int n){
+//
+//}
+//void gradesumVariance(student students[], int n){
+//
+//}
 
 void gradeMath(student students[], int n){
-    everybodyGradesum(students, n);
-    ranking(students, n);
-    outputLeaderboard(students, n);
+    float gradesum=0;
+    everyoneGradesum(students, n);                      //計算每個人的總成績
+    ranking(students, n);                               //計算名次
+    outputLeaderboard(students, n);                     //依照排名輸出
+    gradesum = gradesAverage(students, n);              //計算每個成績的平均
+    outputFloatGrade(gradesumMedian(students, n));      //Median 中位數
+    //outputFloatGrade(gradesumVariance(students, n));    //Variance 變異數
+    //outputFloatGrade(gradesumSD(students, n));          //SD = Standard Deviation 標準差
 }
 //----/gradeMath-----
 
