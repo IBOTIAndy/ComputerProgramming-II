@@ -10,10 +10,8 @@ typedef struct{
     int decimalN;
 }longNumber;
 //-----input-----
-void input006(longNumber *number){
-    char in[50]="";
-    int type=0, i=0, j=0, n=0;
-    scanf("%s", in);
+void inputStateMachine(longNumber *number, char in[]){
+    int type=0, i=0, j=0;
     j = number->integerN;
     for(i=0; in[i] != '\0'; i++, j--){
         if(type == 0){
@@ -39,9 +37,12 @@ void input006(longNumber *number){
             number->decimal[j] = in[i] - '0';
         }
     }
-    //printf("in the input funtion:\n");
-    //outputInputtest(number);
-    //printf("\n");
+}
+
+void input006(longNumber *number){
+    char in[50]="";
+    scanf("%s", in);
+    inputStateMachine(number, in);
 }
 //----/input-----
 
@@ -50,6 +51,12 @@ void input006(longNumber *number){
 //}
 
 //-----test-----
+void testIntput(longNumber *number1, longNumber *number2){
+    number1->negative = 0;  number2->negative = 0;
+    inputStateMachine(number1, "4964658486415446456.41564657844548181");
+    inputStateMachine(number2, "4656746465456451144.45641189184856484");
+}
+
 void outputInputtest(longNumber number){
     int i=0;
     printf("integer:\n");
@@ -71,8 +78,9 @@ void outputInputtest(longNumber number){
 
 int main(){
     longNumber number1={0,{0},20,{0},20}, number2={0,{0},20,{0},20};
-    input006(&number1);
-    input006(&number2);
+    //input006(&number1);
+    //input006(&number2);
+    testIntput(&number1, &number2);
     printf("in the main funtion:\n");
     outputInputtest(number1);
     outputInputtest(number2);
