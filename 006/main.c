@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 //006 以陣列實做長浮點小數的運算
-//2019/03/09 IBOTIAndy AM. 12:07
+//2019/03/09 IBOTIAndy AM. 00:07
 typedef struct{
     int negative;
     int integer[50];
