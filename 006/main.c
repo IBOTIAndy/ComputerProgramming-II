@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 //006 以陣列實做長浮點小數的運算
-//2019/03/06 IBOTIAndy
+//2019/03/09 IBOTIAndy AM. 12:07
 typedef struct{
     int negative;
     int integer[50];
@@ -49,13 +49,70 @@ void input006(longNumber *number){
 }
 //----/input-----
 
+//-----output-----
+void output(longNumber ans, int n){
+    int i=0, dotN=0, type=0;
+    if(ans.negative){
+        printf("-");
+    }
+    i = 0;
+    dotN = -1;
+    while(ans.decimal[i] == 0 && i < n){
+        dotN = i;
+        i = i + 1;
+    }
+    i = n - 1;
+    while(1){
+        if(type == 0){      //去除多餘的 0
+            if(ans.integer[i] != 0 && i >= 0){
+                i = i + 1;
+                type = 1;
+            }
+            if(i < 0){
+                printf("0");
+                i = n;
+                type = 2;
+                if(dotN == n - 1){
+                    break;
+                }
+                else{
+                    printf(".");
+                }
+            }
+        }
+        else if(type == 1){ //整數
+            printf("%d", ans.integer[i]);
+            if(i == 0){
+                type = 2;
+                i = n;
+                if(dotN == n - 1){
+                    break;
+                }
+                else{
+                    printf(".");
+                }
+            }
+        }
+        else if(type == 2){ //小數
+            if(i == dotN){
+                break;
+            }
+            printf("%d", ans.decimal[i]);
+        }
+        i = i - 1;
+    }
+    printf("\n");
+}
+
+//----/output-----
+
 //-----test-----
-void testIntput(longNumber *number1, longNumber *number2){
-    number1->negative = 0;  number2->negative = 0;
-    number1->integerN = 20; number2->integerN = 20;
-    number1->decimalN = 20; number2->decimalN = 20;
-    inputStateMachine(number1, "4964658486415446456.41564657844548181");
-    inputStateMachine(number2, "4656746465456451144.45641189184856484");
+void testIntput(longNumber *number1, longNumber *number2){  //teswfawefhagilguhnelishncdliaejhnli
+    number1->negative = 0;  number2->negative = 0;          //greaheilwujhnlicwjhenilruwehjnilxjh
+    number1->integerN = 20; number2->integerN = 20;         //waexreiojnroiewajoerijo;ifajeoi;xfj
+    number1->decimalN = 20; number2->decimalN = 20;         //waexreiojnroiewajoerijo;ifajeoi;xfj
+    inputStateMachine(number1, "-1");
+    inputStateMachine(number2, "-2");
 }
 
 void outputInputtest(longNumber number){
@@ -118,6 +175,10 @@ int specificSize(longNumber *number1, longNumber *number2, int n){ //比大小
                     i++;        //讓下一次判斷時 會指到正確的長整數位置
                     type = 1;
                 }
+            }
+            if(i == 0){
+                i++;
+                type = 1;
             }
         }
         else if(type == 1){
@@ -211,9 +272,34 @@ void longNumberMathsub(longNumber number1, longNumber number2, longNumber *ans, 
     longNumberMathadd(number1, number2, ans, n);
 }
 
-//void longNumberMathmul(longNumber number1, longNumber number2, longNumber *ans, int n){
-//
-//}
+void loadLongNumber(int saveNumber[], int loadNumber[], int n){
+    int i=0;
+    for(i=0; i < n; i++){
+        saveNumber[i] = loadNumber[i];
+    }
+}
+
+void longNumberMathmul(longNumber number1, longNumber number2, longNumber *ans, int n){
+    int i=0, j=0, carry=0;
+    int longNumber1[40]={0}, longNumber2[40]={0}, mulans[80]={0};
+    if(number1.negative == number2.negative){
+        ans->negative = 0;
+    }
+    else{
+        ans->negative = 1;
+    }
+    loadLongNumber(longNumber1 + 20, number1.integer, 20);
+    loadLongNumber(longNumber1, number1.decimal, 20);
+    loadLongNumber(longNumber2 + 20, number2.integer, 20);
+    loadLongNumber(longNumber2, number2.decimal, 20);
+    for (i=0; i < n; i++){
+        for(j=0; j < n; j++){
+            mulans[i + j] = AdderSubtractor(0, mulans[i + j], longNumber1[i] * longNumber2[j], &carry);
+        }
+    }
+    loadLongNumber(ans->integer, mulans + 40, 40);
+    loadLongNumber(ans->decimal, mulans, 40);
+}
 
 void longNumberMath(longNumber number1, longNumber number2){
     longNumber addAns={0,{0},40,{0},40}, subAns={0,{0},40,{0},40}, mulAns={0,{0},40,{0},40};
@@ -221,19 +307,20 @@ void longNumberMath(longNumber number1, longNumber number2){
     longNumberAlign(number2.integer, number2.integerN);
     longNumberMathadd(number1, number2, &addAns, addAns.integerN);
     longNumberMathsub(number1, number2, &subAns, subAns.integerN);
-    //outputInputtest(addAns);
-    //outputInputtest(subAns);
-    //outputInputtest(mulAns);
+    longNumberMathmul(number1, number2, &mulAns, subAns.integerN);
+    output(addAns, 40);
+    output(subAns, 40);
+    output(mulAns, 40);
 }
 //----/Math-----
 
 
 int main(){
-    longNumber number1={0,{0},0,{0},0}, number2={0,{0},0,{0},0};
+    longNumber number1={0,{0},20,{0},20}, number2={0,{0},20,{0},20};
     input006(&number1);
     input006(&number2);
     //testIntput(&number1, &number2);
-    //  printf("in the main funtion:\n");
+    //printf("in the main funtion:\n");
     //outputInputtest(number1);
     //outputInputtest(number2);
     longNumberMath(number1, number2);
