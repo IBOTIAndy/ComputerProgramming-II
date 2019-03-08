@@ -101,7 +101,7 @@ int longNumberAlign(int number[], int n){
     return 1;
 }
 
-void specificSize(longNumber *number1, longNumber *number2, int n){ //比大小
+int specificSize(longNumber *number1, longNumber *number2, int n){ //比大小
     int type=0, i=0, x=0;
     for(i = n - 1; i >= 0; i--){
         if(type == 0){
@@ -152,7 +152,9 @@ void specificSize(longNumber *number1, longNumber *number2, int n){ //比大小
             number1->decimal[i] = number2->decimal[i];
             number2->decimal[i] = x;
         }
+        return 1;   //有交換
     }
+    return 0;       //沒交換
 }
 
 int AdderSubtractor(int type, int Num1, int Num2, int *carry){
@@ -175,41 +177,62 @@ int AdderSubtractor(int type, int Num1, int Num2, int *carry){
 }
 
 void longNumberMathadd(longNumber number1, longNumber number2, longNumber *ans, int n){
-    int i=0, carry=0;
+    int i=0, type=0, carry=0;
     if(number1.negative != number2.negative){
-        ans->negative = 1;
-        //longNumberMathsub(number1, number2, ans);
+        if(specificSize(&number1, &number2, n / 2)){
+            ans->negative = number2.negative;
+        }
+        else{
+            ans->negative = number1.negative;
+        }
+        type = 1;
     }
     else{
         ans->negative = number1.negative;
-        for(i=0; i < n; i++){   //n=40
-            if(i < 20){
-                ans->decimal[i + 20] = AdderSubtractor(0, number1.decimal[i], number2.decimal[i], &carry);
-            }
-            else{
-                ans->integer[i - 20] = AdderSubtractor(0, number1.integer[i - 20], number2.integer[i - 20], &carry);
-            }
+        type = 0;
+    }
+    for(i=0; i < n; i++){   //n=40
+        if(i < 20){
+            ans->decimal[i + 20] = AdderSubtractor(type, number1.decimal[i], number2.decimal[i], &carry);
         }
-
+        else{
+            ans->integer[i - 20] = AdderSubtractor(type, number1.integer[i - 20], number2.integer[i - 20], &carry);
+        }
     }
 }
+
+void longNumberMathsub(longNumber number1, longNumber number2, longNumber *ans, int n){
+    if(number2.negative == 0){
+        number2.negative = 1;
+    }
+    else{
+        number2.negative = 0;
+    }
+    longNumberMathadd(number1, number2, ans, n);
+}
+
+//void longNumberMathmul(longNumber number1, longNumber number2, longNumber *ans, int n){
+//
+//}
 
 void longNumberMath(longNumber number1, longNumber number2){
     longNumber addAns={0,{0},40,{0},40}, subAns={0,{0},40,{0},40}, mulAns={0,{0},40,{0},40};
     longNumberAlign(number1.integer, number1.integerN);
     longNumberAlign(number2.integer, number2.integerN);
     longNumberMathadd(number1, number2, &addAns, addAns.integerN);
+    longNumberMathsub(number1, number2, &subAns, subAns.integerN);
     //outputInputtest(addAns);
+    //outputInputtest(subAns);
+    //outputInputtest(mulAns);
 }
 //----/Math-----
 
 
-
 int main(){
     longNumber number1={0,{0},0,{0},0}, number2={0,{0},0,{0},0};
-    //input006(&number1);
-    //input006(&number2);
-    testIntput(&number1, &number2);
+    input006(&number1);
+    input006(&number2);
+    //testIntput(&number1, &number2);
     //  printf("in the main funtion:\n");
     //outputInputtest(number1);
     //outputInputtest(number2);
