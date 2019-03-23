@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 //010 解密碼
 //2019/03/17 PM. 05:33 IBOTIAndy
 typedef struct{     //定義結構
@@ -43,9 +44,57 @@ void input(char ciphertext[], decoder *decoder){    //輸入
 
 void output(char ans[]){}
 
-void decodeNumber(decoder *decoder1){}
+//-----run-----
+//--decoder1--
+int isNumber(char *string){     //判斷是不是全部數字
+    int i=0;
+    while(string[i] != '\0'){                   //直到結束字元( '\0' )
+        if(string[i] > '9' || string[i] < '0'){ //如果其中一個字元不在數字範圍內(ASCII)
+            return 0;                           //回傳0 (False)
+        }
+        i = i + 1;                              //
+    }
+    return 1;   //回傳1 (True)
+}
 
+int ansMath1(char *string){ //數字翻轉
+    int i=0, ans=0;         //
+    double carry=0.0;       //進位
+    while(string[i] != '\0'){                               //直到字串找完
+        carry = pow(10, i);                                 //因為pow();這個函數的輸出直接轉成 int 會有問題
+        //printf("carry = %lf, %d\n", carry, (int)carry);     //所以先放入 carry 再強制轉型態
+        ans = ans + ((string[i] - '0') * (int)carry);       //輸入答案
+        i = i + 1;                                          //往前移一格
+    }
+    return ans;             //回傳該字串翻轉並改為數字
+}
+
+void setAns1(char *decoderAns, int ans){   //設定答案
+    int i=0;
+    ans = ans % 10000;          //去掉超過四位數的位置
+    for(i=3; i >= 0; i--){                  //從個位數輸入
+        decoderAns[i] = '0' + (ans % 10);   //'0' + x 位元 例: 4 = '0' + 4 => '4'
+        ans = ans / 10;                     //去除個位數
+    }
+    //printf("%s\n", decoderAns); //測試用
+}
+
+void decodeNumber(decoder *decoder1){   //解碼第一個字串(找數字，顛倒，相加，存到千位
+    int i=0, ans=0;
+    while(decoder1->strings[i].string != NULL){                 //直到整句子讀完
+        if(isNumber(decoder1->strings[i].string)){              //如果找到數字
+            ans = ans + ansMath1(decoder1->strings[i].string);  //答案加上顛倒的該數字
+            //printf("%d\n", ans);                                //測試答案對不對
+        }
+        i = i + 1;                                              //
+    }
+    setAns1(decoder1->ans, ans);        //將答案寫入 decorder 儲存
+    //printf("%s\n", decoder1->ans);      //查看答案對不對
+}
+//-/decoder1--
+//--decoder2--
 void decodeWord(decoder *decoder1){}
+//-/decoder2--
 
 void run(decoder decoder1, decoder decoder2){   //開始解碼
     char ans[100]="";                           //
@@ -53,7 +102,9 @@ void run(decoder decoder1, decoder decoder2){   //開始解碼
     decodeWord(&decoder2);                      //解第二組密碼(字元出現次數)
     output(ans);                                //輸出密碼答案
 }
+//----/run-----
 
+//-----test-----
 void testinputdata(decoder decoderData){                            //查看輸入的資料
     int i=0;
     while(decoderData.strings[i].string != NULL){                   //直到沒有資料
@@ -62,6 +113,7 @@ void testinputdata(decoder decoderData){                            //查看輸入的
         i = i + 1;                                                  //
     }
 }
+//----/test-----
 
 int main(){
     char ciphertext1[100]="";           //定義第一組密碼
