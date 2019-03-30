@@ -1,7 +1,7 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 //013 貪食蛇
-//2019/03/30 PM.08:58 IBOTIAndy
+//2019/03/30 PM.10:38 IBOTIAndy
 typedef struct snake{   //蛇的結構，會往尾巴的方向指
     int body[2];        //目前位置的座標
     int size;           //蛇的長度
@@ -40,7 +40,7 @@ void printSnake(snake *head){   //輸出蛇的長度與座標
     snake *now = head;                                  //新增一個指標來往蛇的尾巴指
     printf("%d\n", head->size);                         //輸出蛇的長度
     for(i=0; i < head->size; i++){                      //輸出次數 = 長度
-        printf("%d %d\n", now->body[0], now->body[1]);  //輸出座標
+        printf("%d %d\n", now->body[1], now->body[0]);  //輸出座標  先輸出 y軸 再輸出 x軸
         now = now->tail;                                //指向下一個身體位置
     }
 }
@@ -85,32 +85,30 @@ void findNext(snake *head, int next, int *x, int *y){   //找到下一個位置
 }
 
 //---Gameover---
-int bumpBody(snake *now, int x, int y){
-    if(now->body[0] == x && now->body[1] == y){
-        return 1;
+int bumpBody(snake *now, int x, int y){         //撞到身體，遞迴  掃描身體判斷有沒有被撞到
+    if(now->body[0] == x && now->body[1] == y){ //如果撞到身體
+        return 1;                               //
     }
-    else if(now->tail == NULL){
-        return 0;
+    else if(now->tail == NULL){                 //如果到尾巴了
+        return 0;                               //
     }
-    else{
-        return bumpBody(now->tail, x, y);
+    else{                                       //身體沒被撞到
+        return bumpBody(now->tail, x, y);       //換下一個位置找
     }
 }
 
-int isGameOver(char map[20][20], snake *head, int x, int y){
-    if(map[x][y] == '1'){
-        return 1;
+int isGameOver(char map[20][20], snake *head, int x, int y){    //遊戲結束
+    if(map[x][y] == '1'){               //如果撞到牆壁
+        return 1;                       //結束遊戲
     }
-    else if(map[x][y] == '#'){
-        return 0;
+    else if(map[x][y] == '#'){          //如果吃到水果
+        return 0;                       //不會結束遊戲
     }
-    else{
-        return bumpBody(head, x, y);
+    else{                               //沒撞到牆也沒吃到水果
+        return bumpBody(head, x, y);    //判斷是不是撞到身體  撞到回傳1 結束遊戲
     }
 }
 //--/Gameover---
-
-int eatFruit(char map[20][20], snake *head){return 0;}
 
 //---snakeMove---
 void move(int xy[2], int x, int y){ //將尾巴移向身體，身體移向頭...
@@ -126,15 +124,39 @@ void moveRecursuvely(snake *now, int x, int y){                 //蛇往前移動
 }
 //--/snakeMove---
 
-void growingUp(snake *head){}
+//---eatFruit---
+int eatFruit(char map[20][20], int x, int y){   //吃到水果了嗎
+    if(map[x][y] == '#'){   //吃到水果了
+        map[x][y] = '0';    //將水果吃掉
+        return 1;
+    }
+    return 0;
+}
+
+void growingUp(snake *now){ //吃到水果  成長  #遞迴
+    now->size = now->size + 1;                          //長大 size +1
+    if(now->tail == NULL){                              //如果找到尾巴了
+        snake *tail = malloc(sizeof(snake));            //新增一個snake
+        move(tail->body, now->body[0], now->body[1]);   //將尾巴的位置給新的尾巴
+        tail->size = 1;                                 //初始值
+        tail->facing = 4;                               //初始值
+        tail->tail = NULL;                              //初始值 指向NULL
+//        printf("{%d, %d}\n", tail->body[0], tail->body[1]);
+        now->tail = tail;                               //舊的尾巴成為身體 指向新尾巴
+    }
+    else{                                               //如果還沒找到尾巴
+        growingUp(now->tail);                           //往尾巴指
+    }
+}
+//--/eatFruit---
 //----/game-----
 
 void run(char map[20][20], snake *head){
     int next=0, nextX=0, nextY=0;
     mapReset(map);          //重置地圖
-    testOutputMap(map, 20); //輸出地圖 (測試用)
+//    testOutputMap(map, 20); //輸出地圖 (測試用)
     inputFruits(map);       //輸入水果
-    testOutputMap(map, 20); //輸出地圖 (測試用)
+//    testOutputMap(map, 20); //輸出地圖 (測試用)
     scanf("%d", &next);     //第一次輸入
     while(next != -1){              //如果直接結束
         if(next == 0){              //印出蛇的長度與座標
@@ -146,18 +168,17 @@ void run(char map[20][20], snake *head){
 //                printf("Gameover~\n");
                 break;                                      //跳出迴圈
             }
-            else if(eatFruit(map, head)){                   //吃到水果
+            else if(eatFruit(map, nextX, nextY)){           //沒吃到水果
                 growingUp(head);                            //加長度
             }
-            else{                                           //移動
-                moveRecursuvely(head, nextX, nextY);        //遞迴到尾巴，從尾巴開始往頭移動
-            }
+            moveRecursuvely(head, nextX, nextY);            //移動  遞迴到尾巴，從尾巴開始往頭移動
         }
         else{                       //轉目前的面對方向
             head->facing = next;    //改變蛇頭面向的位置
         }
         scanf("%d", &next);         //重複輸入
     }
+    printSnake(head);       //輸出蛇的位置
 }
 //---------/run----------
 
