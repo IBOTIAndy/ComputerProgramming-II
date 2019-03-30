@@ -1,9 +1,10 @@
 #include <stdio.h>
 
 //013 貪食蛇
-//2019/03/29 PM.11:09 IBOTIAndy
+//2019/03/30 PM.03:30 IBOTIAndy
 typedef struct snake{   //蛇的結構，會往尾巴的方向指
     int body[2];        //目前位置的座標
+    int size;           //蛇的長度
     struct snake *tail; //往尾巴的方向指
 }snake;
 
@@ -33,7 +34,15 @@ void inputFruits(char map[20][20]){ //輸入水果的位置
 //----/input-----
 
 //-----output-----
-void printSnake(snake *head){}
+void printSnake(snake *head){   //輸出蛇的長度與座標
+    int i=0;                                            //
+    snake *now = head;                                  //新增一個指標來往蛇的尾巴指
+    printf("%d\n", head->size);                         //輸出蛇的長度
+    for(i=0; i < head->size; i++){                      //輸出次數 = 長度
+        printf("%d %d\n", now->body[0], now->body[1]);  //輸出座標
+        now = now->tail;                                //指向下一個身體位置
+    }
+}
 //----/output-----
 
 //-----map-----
@@ -93,7 +102,7 @@ void run(char map[20][20], snake *head){
 //---------/run----------
 
 int main(){
-    snake head={{0}, NULL};
+    snake head={{9, 9}, 1, NULL};
     char map[20][20]={{' '}};
     run(map, &head);
     return 0;
