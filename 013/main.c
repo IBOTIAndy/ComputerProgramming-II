@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 //013 貪食蛇
-//2019/03/30 PM.03:30 IBOTIAndy
+//2019/03/30 PM.08:58 IBOTIAndy
 typedef struct snake{   //蛇的結構，會往尾巴的方向指
     int body[2];        //目前位置的座標
     int size;           //蛇的長度
@@ -83,10 +83,36 @@ void findNext(snake *head, int next, int *x, int *y){   //找到下一個位置
         *x = *x + 1;    //x 往右一格 +1
     }
 }
-int isGameOver(char map[20][20], snake *head){return 0;}
+
+//---Gameover---
+int bumpBody(snake *now, int x, int y){
+    if(now->body[0] == x && now->body[1] == y){
+        return 1;
+    }
+    else if(now->tail == NULL){
+        return 0;
+    }
+    else{
+        return bumpBody(now->tail, x, y);
+    }
+}
+
+int isGameOver(char map[20][20], snake *head, int x, int y){
+    if(map[x][y] == '1'){
+        return 1;
+    }
+    else if(map[x][y] == '#'){
+        return 0;
+    }
+    else{
+        return bumpBody(head, x, y);
+    }
+}
+//--/Gameover---
 
 int eatFruit(char map[20][20], snake *head){return 0;}
 
+//---snakeMove---
 void move(int xy[2], int x, int y){ //將尾巴移向身體，身體移向頭...
     xy[0] = x;
     xy[1] = y;
@@ -98,6 +124,7 @@ void moveRecursuvely(snake *now, int x, int y){                 //蛇往前移動
     }
     move(now->body, x, y);                                      //將後面的身體或尾巴往前面推一格
 }
+//--/snakeMove---
 
 void growingUp(snake *head){}
 //----/game-----
@@ -113,9 +140,10 @@ void run(char map[20][20], snake *head){
         if(next == 0){              //印出蛇的長度與座標
             printSnake(head);       //輸出蛇的位置
         }
-        else if(next == 5){                                 //如果要前進
+        else if(next == 5){         //如果要前進
             findNext(head, head->facing, &nextX, &nextY);   //找到蛇要走的下一格座標
-            if(isGameOver(map, head)){                      //如果撞到牆或自己，遊戲結束
+            if(isGameOver(map, head, nextX, nextY)){        //如果撞到牆或自己，遊戲結束
+//                printf("Gameover~\n");
                 break;                                      //跳出迴圈
             }
             else if(eatFruit(map, head)){                   //吃到水果
