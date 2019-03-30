@@ -93,7 +93,82 @@ void decodeNumber(decoder *decoder1){   //¸Ñ½X²Ä¤@­Ó¦r¦ê(§ä¼Æ¦r¡AÄA­Ë¡A¬Û¥[¡A¦s¨
 }
 //-/decoder1--
 //--decoder2--
-void decodeWord(decoder *decoder1){}
+char selectWord(char *string){
+    int i=0;
+    char select=' ';
+    while(string[i] != '\0'){
+        if(string[i] != '.'){    //¤w§ä¹L¦r¤¸
+            select = string[i];
+            string[i] = '.';
+            return select;
+        }
+        i = i + 1;
+    }
+    return '.';
+}
+
+int findMore(char *string, char key){
+    int i=0, ans=0;
+    while(string[i] != '\0'){
+        if(string[i] == key){
+            string[i] = '.';
+            ans = ans + 1;
+        }
+    }
+    return ans;
+}
+
+int selectString(stringArray *strings, int i){
+    int j=0, ans=0, newAns=0, iCarry=0, jCarry=0;
+    double carry=0.0;
+    char now=' ';
+    now = now + 1;
+    now = selectWord((strings + i)->string);
+    while(now != '.'){
+        carry = pow(10, iCarry - jCarry);
+        if(now >= '0' && now <= '9'){
+            newAns = now - '0';
+        }
+        else{
+            j = i;
+            while(strings[j].string != NULL){
+                newAns = newAns + findMore((strings + j)->string, now);
+                j = j + 1;
+            }
+        }
+        if(newAns <= 9){
+            ans = (ans * (int)carry) + newAns;
+        }
+        else{
+            jCarry = jCarry + 1;
+        }
+    }
+    return ans;
+}
+
+void setAns2(decoder *decoder2, int ans){
+//    int i=0, j=0;
+//    char ansS[10] = "";
+//    while(ans != 0){
+//        ansS[j] = ans % 10;
+//    }
+//    while(decoder2->ans[i] != '\0'){
+//        i = i + 1;
+//    }
+//    while(ans != 0){
+//        decoder2->ans[i] =
+//    }
+}
+
+void decodeWord(decoder *decoder2){
+    int i=0, ans=0;
+    while(decoder2->strings[i].string != NULL){
+        ans = selectString(decoder2->strings, i);
+        if(ans != 0){
+            setAns2(decoder2, ans);
+        }
+    }
+}
 //-/decoder2--
 
 void run(decoder decoder1, decoder decoder2){   //¶}©l¸Ñ½X
