@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //016 魔術方塊操作
-//2019/04/06 IBOTIAndy PM. 03:00
+//2019/04/07 IBOTIAndy PM. 05:45
 typedef struct{
     int data[3][3];
 }side;
@@ -61,31 +61,179 @@ void setMagicBlock(side magicBlock[]){  //設定魔術方塊
 
 
 //----------run----------
-void rotate(){  //旋轉
+int notEnd(char input[]){
+    if(input[0] == '-'){
+        if(input[1] == '1'){
+            if(input[2] == '\0'){   //如果是 -1
+                return 0;           //結束程式
+            }
+        }
+    }
+    return 1;
 }
 
-void rotateUp(){}
-void rotateDown(){}
-void rotateLift(){}
-void rotateRight(){}
+void rotate(side *magicBlock, int lift, int right){  //旋轉
+    int temporarily1=0, temporarily2=0;
+    if(lift){
+        temporarily1 = magicBlock->data[0][0];
+        temporarily2 = magicBlock->data[0][1];
 
-int notEnd(char input[]){return 0;}
+        magicBlock->data[0][0] = magicBlock->data[0][2];
+        magicBlock->data[0][1] = magicBlock->data[1][2];
+
+        magicBlock->data[0][2] = magicBlock->data[2][2];
+        magicBlock->data[1][2] = magicBlock->data[2][1];
+
+        magicBlock->data[2][2] = magicBlock->data[2][0];
+        magicBlock->data[2][1] = magicBlock->data[1][0];
+
+        magicBlock->data[2][0] = temporarily1;
+        magicBlock->data[1][0] = temporarily2;
+    }
+    else if(right){
+        temporarily1 = magicBlock->data[0][1];
+        temporarily2 = magicBlock->data[0][2];
+
+        magicBlock->data[0][1] = magicBlock->data[0][0];
+        magicBlock->data[0][2] = magicBlock->data[1][0];
+
+        magicBlock->data[0][0] = magicBlock->data[2][0];
+        magicBlock->data[1][0] = magicBlock->data[2][1];
+
+        magicBlock->data[2][0] = magicBlock->data[2][2];
+        magicBlock->data[2][1] = magicBlock->data[1][2];
+
+        magicBlock->data[2][2] = temporarily1;
+        magicBlock->data[1][2] = temporarily2;
+    }
+}
+
+void rotateTemporarily(side magicBlock, int x, int y, int *x1, int *x2, int *x3){   //暫存
+    if(x != -1){        //如果是直向，紀錄剛直排的每個值
+        *x1 = magicBlock.data[x][0];
+        *x2 = magicBlock.data[x][1];
+        *x3 = magicBlock.data[x][2];
+    }
+    else if(y != -1){   //如果是橫向，紀錄剛橫排的每個值
+        *x1 = magicBlock.data[0][y];
+        *x2 = magicBlock.data[1][y];
+        *x3 = magicBlock.data[2][y];
+    }
+}
+
+//-------Up & Down------
+void rotateUpDown1(side *inMagicBlock, side *outMagicBlock, int x){}
+void rotateUpDown2(side *inMagicBlock, int x1, int x2, int x3, int x){}
+//------/Up & Down------
+
+//-----Lift & Right-----
+void rotateLiftRight1(side *inMagicBlock, side *outMagicBlock, int y){}
+void rotateLiftRight2(side *inMagicBlock, int x1, int x2, int x3, int y){}
+//----/Lift & Right-----
+
+void rotateLine(side magicBlock[], int type, int side[], int x, int y){
+    int x1=0, x2=0, x3=0;   //暫存
+    if(type == 1 || type == 2){      //Up & Down
+        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);
+        rotateUpDown1(&magicBlock[side[0]], &magicBlock[side[1]], x);
+        rotateUpDown1(&magicBlock[side[1]], &magicBlock[side[2]], x);
+        rotateUpDown1(&magicBlock[side[2]], &magicBlock[side[3]], x);
+        rotateUpDown2(&magicBlock[side[3]], x1, x2, x3, x);
+    }
+    else if(type == 3 || type == 4){ //Lift & Right
+        rotateTemporarily(magicBlock[side[0]], y, -1, &x1, &x2, &x3);
+        rotateLiftRight1(&magicBlock[side[0]], &magicBlock[side[1]], y);
+        rotateLiftRight1(&magicBlock[side[1]], &magicBlock[side[2]], y);
+        rotateLiftRight1(&magicBlock[side[2]], &magicBlock[side[3]], y);
+        rotateLiftRight2(&magicBlock[side[3]], x1, x2, x3, y);
+    }
+}
+
+void selectSide(int side[], int x1, int x2, int x3, int x4){    //選擇會翻到的面
+    side[0] = x1;
+    side[1] = x2;
+    side[2] = x3;
+    side[3] = x4;
+}
 
 void run(side magicBlock[]){
+    int side[4]={0};
     char input[5]={' '};
     scanf("%s", input);
     while(notEnd(input)){
         if(input[0] == '0'){
-
+            if(input[1] == 'U'){
+                selectSide(side, 1, 3, 4, 5);           //前拿下，下拿後，後拿上，上拿前
+                rotateLine(magicBlock, 1, side, 0, -1); //左邊往上
+                rotate(&magicBlock[0], 1, 0);           //左面向左旋轉
+            }
+            else if(input[1] == 'D'){
+                selectSide(side, 1, 5, 4, 3);           //前拿上，上拿後，後拿下，下拿前
+                rotateLine(magicBlock, 2, side, 0, -1); //左邊往下
+                rotate(&magicBlock[0], 0, 1);           //左面向右旋轉
+            }
+            else if(input[1] == 'L'){
+                selectSide(side, 1, 2, 4, 0);           //前拿右，右拿後，後拿左，左拿前
+                rotateLine(magicBlock, 3, side, -1, 0); //上邊往左
+                rotate(&magicBlock[5], 0, 1);           //上面向右旋轉
+            }
+            else if(input[1] == 'R'){
+                selectSide(side, 1, 0, 4, 2);           //前拿左，左拿後，後拿右，右拿前
+                rotateLine(magicBlock, 4, side, -1, 0); //上邊往右
+                rotate(&magicBlock[5], 1, 0);           //上面向左旋轉
+            }
         }
         else if(input[0] == '4'){
-
+            if(input[1] == 'U'){
+                selectSide(side, 1, 3, 4, 5);           //前拿下，下拿後，後拿上，上拿前
+                rotateLine(magicBlock, 1, side, 1, -1); //中間往上
+            }
+            else if(input[1] == 'D'){
+                selectSide(side, 1, 5, 4, 3);           //前拿上，上拿後，後拿下，下拿前
+                rotateLine(magicBlock, 2, side, 1, -1); //中間往下
+            }
+            else if(input[1] == 'L'){
+                selectSide(side, 1, 2, 4, 0);           //前拿右，右拿後，後拿左，左拿前
+                rotateLine(magicBlock, 3, side, -1, 1); //中間往左
+            }
+            else if(input[1] == 'R'){
+                selectSide(side, 1, 0, 4, 2);           //前拿左，左拿後，後拿右，右拿前
+                rotateLine(magicBlock, 4, side, -1, 1); //中間往右
+            }
         }
         else if(input[0] == '8'){
-
+            if(input[1] == 'U'){
+                selectSide(side, 1, 3, 4, 5);           //前拿下，下拿後，後拿上，上拿前
+                rotateLine(magicBlock, 1, side, 2, -1); //右邊往上
+                rotate(&magicBlock[2], 0, 1);           //右面向左旋轉
+            }
+            else if(input[1] == 'D'){
+                selectSide(side, 1, 5, 4, 3);           //前拿上，上拿後，後拿下，下拿前
+                rotateLine(magicBlock, 2, side, 2, -1); //右邊往下
+                rotate(&magicBlock[2], 1, 0);           //右面向右旋轉
+            }
+            else if(input[1] == 'L'){
+                selectSide(side, 1, 2, 4, 0);           //前拿右，右拿後，後拿左，左拿前
+                rotateLine(magicBlock, 3, side, -1, 2); //下邊往左
+                rotate(&magicBlock[3], 1, 0);           //下面向右旋轉
+            }
+            else if(input[1] == 'R'){
+                selectSide(side, 1, 0, 4, 2);           //前拿左，左拿後，後拿右，右拿前
+                rotateLine(magicBlock, 4, side, -1, 2); //下邊往右
+                rotate(&magicBlock[3], 0, 1);           //下面向左旋轉
+            }
         }
         else if(input[0] == 'C'){
-
+            if(input[1] == 'L'){
+                selectSide(side, 2, 3, 0, 5);           //右拿下，下拿左，左拿上，上拿右
+                rotateLine(magicBlock, 1, side, 0, -1); //右面: 左邊往上
+                rotate(&magicBlock[1], 1, 0);           //前面向左旋轉
+            }
+            else if(input[1] == 'R'){
+                selectSide(side, 0, 3, 2, 5);           //左拿下，下拿右，右拿上，上拿左
+                rotateLine(magicBlock, 1, side, 2, -1); //左面: 右邊往上
+                rotate(&magicBlock[1], 0, 1);           //前面向右旋轉
+            }
         }
         scanf("%s", input);
     }
