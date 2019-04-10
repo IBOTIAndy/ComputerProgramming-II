@@ -91,11 +91,11 @@ void rotate(side *magicBlock, int lift, int right){  //旋轉
         magicBlock->data[1][0] = temporarily2;
     }
     else if(right){
-        temporarily1 = magicBlock->data[0][1];
-        temporarily2 = magicBlock->data[0][2];
+        temporarily1 = magicBlock->data[0][2];
+        temporarily2 = magicBlock->data[0][1];
 
-        magicBlock->data[0][1] = magicBlock->data[0][0];
-        magicBlock->data[0][2] = magicBlock->data[1][0];
+        magicBlock->data[0][2] = magicBlock->data[0][0];
+        magicBlock->data[0][1] = magicBlock->data[1][0];
 
         magicBlock->data[0][0] = magicBlock->data[2][0];
         magicBlock->data[1][0] = magicBlock->data[2][1];
@@ -158,19 +158,32 @@ void rotateLine(side magicBlock[], int type, int side[], int x, int y){
     int t1=0, t2=0, t3=0;
     int backx=0;
     backx = changeX(x);
-    if(type == 1 || type == 2){      //Up & Down
+    if(type == 1 || type == 2){      //Up
         rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //拿第一面
         rotateTemporarily(magicBlock[side[1]], x, -1, &t1, &t2, &t3);       //拿第二面
         rotateUpDown(&magicBlock[side[0]], t1, t2, t3, x);                  //將第二面放入第一面
 
         rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //拿第三面
-        rotateUpDown(&magicBlock[side[1]], t1, t2, t3, x);                  //將第三面放入第二面
+        rotateUpDown(&magicBlock[side[1]], t3, t2, t1, x);                  //將第三面放入第二面
 
         rotateTemporarily(magicBlock[side[3]], x, -1, &t1, &t2, &t3);       //拿第四面
-        rotateUpDown(&magicBlock[side[2]], t1, t2, t3, backx);              //將第四面放入第三面
+        rotateUpDown(&magicBlock[side[2]], t3, t2, t1, backx);              //將第四面放入第三面
 
         rotateUpDown(&magicBlock[side[3]], x1, x2, x3, x);                  //將第一面放入第四面
     }
+//    else if(type == 2){      //Down
+//        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //拿第一面
+//        rotateTemporarily(magicBlock[side[1]], x, -1, &t1, &t2, &t3);       //拿第二面
+//        rotateUpDown(&magicBlock[side[0]], t1, t2, t3, x);                  //將第二面放入第一面
+//
+//        rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //拿第三面
+//        rotateUpDown(&magicBlock[side[1]], t3, t2, t1, x);                  //將第三面放入第二面
+//
+//        rotateTemporarily(magicBlock[side[3]], x, -1, &t1, &t2, &t3);       //拿第四面
+//        rotateUpDown(&magicBlock[side[2]], t3, t2, t1, backx);              //將第四面放入第三面
+//
+//        rotateUpDown(&magicBlock[side[3]], x1, x2, x3, x);                  //將第一面放入第四面
+//    }
     else if(type == 3 || type == 4){ //Lift & Right
         rotateTemporarily(magicBlock[side[0]], y, -1, &y1, &y2, &y3);
         rotateLiftRight1(&magicBlock[side[0]], magicBlock[side[1]], y);
@@ -193,7 +206,10 @@ void run(side magicBlock[]){
 //    setTestOutput(magicBlock);
     scanf("%s", input);
     while(notEnd(input)){
-        if(input[0] == '0'){
+        if(input[0] == 't'){
+            setTestOutput(magicBlock);                  //測試用
+        }
+        else if(input[0] == '0'){
             if(input[1] == 'U'){
                 selectSide(side, 1, 3, 4, 5);           //前拿下，下拿後，後拿上，上拿前
                 rotateLine(magicBlock, 1, side, 0, -1); //左邊往上
@@ -267,17 +283,31 @@ void run(side magicBlock[]){
                 rotate(&magicBlock[1], 0, 1);           //前面向右旋轉
             }
         }
-//        setTestOutput(magicBlock);
         scanf("%s", input);
     }
 }
 //---------/run----------
+
+//----------output----------
+void output(side magicBlock[]){
+    int side=0, i=0, j=0, n=0;
+    side = 1;
+    n = 3;
+    for(i=0; i < n; i++){
+        for(j=0; j < n; j++){
+            printf("%d ", magicBlock[side].data[i][j]);
+        }
+        printf("\n");
+    }
+}
+//---------/output----------
 
 int main(){
     side magicBlock[6];
     setMagicBlock(magicBlock);
 //    setTestOutput(magicBlock);          //測試有沒有正確寫入
     run(magicBlock);
+    output(magicBlock);
 //    printf("Hello world!\n");
     return 0;
 }
