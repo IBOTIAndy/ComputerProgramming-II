@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //016 魔術方塊操作
-//2019/04/07 IBOTIAndy PM. 05:45
+//2019/04/10 IBOTIAndy PM. 10:34
 typedef struct{
     int data[3][3];
 }side;
@@ -110,42 +110,73 @@ void rotate(side *magicBlock, int lift, int right){  //旋轉
 
 void rotateTemporarily(side magicBlock, int x, int y, int *x1, int *x2, int *x3){   //暫存
     if(x != -1){        //如果是直向，紀錄剛直排的每個值
-        *x1 = magicBlock.data[x][0];
-        *x2 = magicBlock.data[x][1];
-        *x3 = magicBlock.data[x][2];
+        *x1 = magicBlock.data[0][x];
+        *x2 = magicBlock.data[1][x];
+        *x3 = magicBlock.data[2][x];
     }
     else if(y != -1){   //如果是橫向，紀錄剛橫排的每個值
-        *x1 = magicBlock.data[0][y];
-        *x2 = magicBlock.data[1][y];
-        *x3 = magicBlock.data[2][y];
+        *x1 = magicBlock.data[y][0];
+        *x2 = magicBlock.data[y][1];
+        *x3 = magicBlock.data[y][2];
     }
 }
 
 //-------Up & Down------
-void rotateUpDown1(side *inMagicBlock, side *outMagicBlock, int x){}
-void rotateUpDown2(side *inMagicBlock, int x1, int x2, int x3, int x){}
+void rotateUpDown(side *inMagicBlock, int x1, int x2, int x3, int x){
+    inMagicBlock->data[0][x] = x1;
+    inMagicBlock->data[1][x] = x2;
+    inMagicBlock->data[2][x] = x3;
+}
 //------/Up & Down------
 
 //-----Lift & Right-----
-void rotateLiftRight1(side *inMagicBlock, side *outMagicBlock, int y){}
-void rotateLiftRight2(side *inMagicBlock, int x1, int x2, int x3, int y){}
+void rotateLiftRight1(side *inMagicBlock, side outMagicBlock, int y){
+    inMagicBlock->data[y][0] = outMagicBlock.data[y][0];
+    inMagicBlock->data[y][1] = outMagicBlock.data[y][1];
+    inMagicBlock->data[y][2] = outMagicBlock.data[y][2];
+}
+void rotateLiftRight2(side *inMagicBlock, int y1, int y2, int y3, int y){
+    inMagicBlock->data[y][0] = y1;
+    inMagicBlock->data[y][1] = y2;
+    inMagicBlock->data[y][2] = y3;
+}
 //----/Lift & Right-----
+
+int changeX(int x){
+    if(x == 0){
+        x = 2;
+    }
+    else if(x == 2){
+        x = 0;
+    }
+    return x;
+}
 
 void rotateLine(side magicBlock[], int type, int side[], int x, int y){
     int x1=0, x2=0, x3=0;   //暫存
+    int y1=0, y2=0, y3=0;   //暫存
+    int t1=0, t2=0, t3=0;
+    int backx=0;
+    backx = changeX(x);
     if(type == 1 || type == 2){      //Up & Down
-        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);
-        rotateUpDown1(&magicBlock[side[0]], &magicBlock[side[1]], x);
-        rotateUpDown1(&magicBlock[side[1]], &magicBlock[side[2]], x);
-        rotateUpDown1(&magicBlock[side[2]], &magicBlock[side[3]], x);
-        rotateUpDown2(&magicBlock[side[3]], x1, x2, x3, x);
+        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //拿第一面
+        rotateTemporarily(magicBlock[side[1]], x, -1, &t1, &t2, &t3);       //拿第二面
+        rotateUpDown(&magicBlock[side[0]], t1, t2, t3, x);                  //將第二面放入第一面
+
+        rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //拿第三面
+        rotateUpDown(&magicBlock[side[1]], t1, t2, t3, x);                  //將第三面放入第二面
+
+        rotateTemporarily(magicBlock[side[3]], x, -1, &t1, &t2, &t3);       //拿第四面
+        rotateUpDown(&magicBlock[side[2]], t1, t2, t3, backx);              //將第四面放入第三面
+
+        rotateUpDown(&magicBlock[side[3]], x1, x2, x3, x);                  //將第一面放入第四面
     }
     else if(type == 3 || type == 4){ //Lift & Right
-        rotateTemporarily(magicBlock[side[0]], y, -1, &x1, &x2, &x3);
-        rotateLiftRight1(&magicBlock[side[0]], &magicBlock[side[1]], y);
-        rotateLiftRight1(&magicBlock[side[1]], &magicBlock[side[2]], y);
-        rotateLiftRight1(&magicBlock[side[2]], &magicBlock[side[3]], y);
-        rotateLiftRight2(&magicBlock[side[3]], x1, x2, x3, y);
+        rotateTemporarily(magicBlock[side[0]], y, -1, &y1, &y2, &y3);
+        rotateLiftRight1(&magicBlock[side[0]], magicBlock[side[1]], y);
+        rotateLiftRight1(&magicBlock[side[1]], magicBlock[side[2]], y);
+        rotateLiftRight1(&magicBlock[side[2]], magicBlock[side[3]], y);
+        rotateLiftRight2(&magicBlock[side[3]], y1, y2, y3, y);
     }
 }
 
@@ -159,6 +190,7 @@ void selectSide(int side[], int x1, int x2, int x3, int x4){    //選擇會翻到的面
 void run(side magicBlock[]){
     int side[4]={0};
     char input[5]={' '};
+//    setTestOutput(magicBlock);
     scanf("%s", input);
     while(notEnd(input)){
         if(input[0] == '0'){
@@ -235,6 +267,7 @@ void run(side magicBlock[]){
                 rotate(&magicBlock[1], 0, 1);           //前面向右旋轉
             }
         }
+//        setTestOutput(magicBlock);
         scanf("%s", input);
     }
 }
