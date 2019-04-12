@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //016 魔術方塊操作
-//2019/04/10 IBOTIAndy PM. 10:34
+//2019/04/12 IBOTIAndy PM. 09:32
 typedef struct{
     int data[3][3];
 }side;
@@ -27,14 +27,20 @@ void setTestOutput(side magicBlock[]){  //確認輸出正不正確
 void reverseSide(side *side5){              //改變背面的設定
     int temporarily[3]={0};
     temporarily[0] = side5->data[0][0];
-    temporarily[1] = side5->data[0][1];
+    temporarily[1] = side5->data[0][1];     //
     temporarily[2] = side5->data[0][2];
-    side5->data[0][0] = side5->data[2][0];
+    side5->data[0][0] = side5->data[2][2];
     side5->data[0][1] = side5->data[2][1];
-    side5->data[0][2] = side5->data[2][2];
-    side5->data[2][0] = temporarily[0];
+    side5->data[0][2] = side5->data[2][0];
+    side5->data[2][2] = temporarily[0];
     side5->data[2][1] = temporarily[1];
-    side5->data[2][2] = temporarily[2];
+    side5->data[2][0] = temporarily[2];
+    temporarily[0] = side5->data[1][0];
+    temporarily[1] = side5->data[1][1];
+    temporarily[2] = side5->data[1][2];
+    side5->data[1][2] = temporarily[0];
+    side5->data[1][1] = temporarily[1];
+    side5->data[1][0] = temporarily[2];
 }
 
 void setSide(side *blockSide, int side){        //設定一個面
@@ -110,14 +116,14 @@ void rotate(side *magicBlock, int lift, int right){  //旋轉
 
 void rotateTemporarily(side magicBlock, int x, int y, int *x1, int *x2, int *x3){   //暫存
     if(x != -1){        //如果是直向，紀錄剛直排的每個值
-        *x1 = magicBlock.data[0][x];
-        *x2 = magicBlock.data[1][x];
-        *x3 = magicBlock.data[2][x];
+        *x1 = magicBlock.data[0][x];        //X
+        *x2 = magicBlock.data[1][x];        //X
+        *x3 = magicBlock.data[2][x];        //X
     }
     else if(y != -1){   //如果是橫向，紀錄剛橫排的每個值
-        *x1 = magicBlock.data[y][0];
-        *x2 = magicBlock.data[y][1];
-        *x3 = magicBlock.data[y][2];
+        *x1 = magicBlock.data[y][0];        //Y Y Y
+        *x2 = magicBlock.data[y][1];        //
+        *x3 = magicBlock.data[y][2];        //
     }
 }
 
@@ -142,7 +148,7 @@ void rotateLiftRight2(side *inMagicBlock, int y1, int y2, int y3, int y){
 }
 //----/Lift & Right-----
 
-int changeX(int x){
+int change(int x){  //
     if(x == 0){
         x = 2;
     }
@@ -156,8 +162,9 @@ void rotateLine(side magicBlock[], int type, int side[], int x, int y){
     int x1=0, x2=0, x3=0;   //暫存
     int y1=0, y2=0, y3=0;   //暫存
     int t1=0, t2=0, t3=0;
-    int backx=0;
-    backx = changeX(x);
+    int backx=0, backy=0;
+    backx = change(x);
+    backy = change(y);
     if(type == 1 || type == 2){      //Up
         rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //拿第一面
         rotateTemporarily(magicBlock[side[1]], x, -1, &t1, &t2, &t3);       //拿第二面
@@ -171,25 +178,40 @@ void rotateLine(side magicBlock[], int type, int side[], int x, int y){
 
         rotateUpDown(&magicBlock[side[3]], x1, x2, x3, x);                  //將第一面放入第四面
     }
-//    else if(type == 2){      //Down
-//        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //拿第一面
-//        rotateTemporarily(magicBlock[side[1]], x, -1, &t1, &t2, &t3);       //拿第二面
-//        rotateUpDown(&magicBlock[side[0]], t1, t2, t3, x);                  //將第二面放入第一面
-//
-//        rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //拿第三面
-//        rotateUpDown(&magicBlock[side[1]], t3, t2, t1, x);                  //將第三面放入第二面
-//
-//        rotateTemporarily(magicBlock[side[3]], x, -1, &t1, &t2, &t3);       //拿第四面
-//        rotateUpDown(&magicBlock[side[2]], t3, t2, t1, backx);              //將第四面放入第三面
-//
-//        rotateUpDown(&magicBlock[side[3]], x1, x2, x3, x);                  //將第一面放入第四面
-//    }
     else if(type == 3 || type == 4){ //Lift & Right
-        rotateTemporarily(magicBlock[side[0]], y, -1, &y1, &y2, &y3);
+        rotateTemporarily(magicBlock[side[0]], -1, y, &y1, &y2, &y3);
         rotateLiftRight1(&magicBlock[side[0]], magicBlock[side[1]], y);
         rotateLiftRight1(&magicBlock[side[1]], magicBlock[side[2]], y);
         rotateLiftRight1(&magicBlock[side[2]], magicBlock[side[3]], y);
         rotateLiftRight2(&magicBlock[side[3]], y1, y2, y3, y);
+    }
+    else if(type == 5){ //旋轉用
+        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //取出右面 左邊   side 3
+
+        rotateTemporarily(magicBlock[side[1]], -1, y, &t1, &t2, &t3);       //取出下面 上邊   side 4->
+        rotateUpDown(&magicBlock[side[0]], t3, t2, t1, x);                  //放入右面 左邊   ->side 3
+
+        rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //取出左面 右邊   side 1->
+        rotateLiftRight2(&magicBlock[side[1]], t1, t2, t3, y);              //放入下面 上邊   ->side 4
+
+        rotateTemporarily(magicBlock[side[3]], -1, backy, &t1, &t2, &t3);   //取出上面 下邊   side 6->
+        rotateUpDown(&magicBlock[side[2]], t3, t2, t1, backx);              //放入左面 右邊   ->side 1
+
+        rotateLiftRight2(&magicBlock[side[3]], x1, x2, x3, backy);          //放入左面 右邊   side 3->side 6
+    }
+    else if(type == 6){
+        rotateTemporarily(magicBlock[side[0]], x, -1, &x1, &x2, &x3);       //取出左面 右邊   side 1
+
+        rotateTemporarily(magicBlock[side[1]], -1, y, &t1, &t2, &t3);       //取出下面 上邊   side 4->
+        rotateUpDown(&magicBlock[side[0]], t1, t2, t3, x);                  //放入左面 右邊   ->side 1
+
+        rotateTemporarily(magicBlock[side[2]], backx, -1, &t1, &t2, &t3);   //取出右面 左邊   side 3->
+        rotateLiftRight2(&magicBlock[side[1]], t3, t2, t1, y);              //放入下面 上邊   ->side 4
+
+        rotateTemporarily(magicBlock[side[3]], -1, backy, &t1, &t2, &t3);   //取出上面 下邊   side 6->
+        rotateUpDown(&magicBlock[side[2]], t1, t2, t3, backx);              //放入右面 左邊   ->side 3
+
+        rotateLiftRight2(&magicBlock[side[3]], x3, x2, x1, backy);          //放入上面 下邊   side 1->side 6
     }
 }
 
@@ -274,12 +296,12 @@ void run(side magicBlock[]){
         else if(input[0] == 'C'){
             if(input[1] == 'L'){
                 selectSide(side, 2, 3, 0, 5);           //右拿下，下拿左，左拿上，上拿右
-                rotateLine(magicBlock, 1, side, 0, -1); //右面: 左邊往上
+                rotateLine(magicBlock, 5, side, 0, 0);  //右面: 左邊往上
                 rotate(&magicBlock[1], 1, 0);           //前面向左旋轉
             }
             else if(input[1] == 'R'){
                 selectSide(side, 0, 3, 2, 5);           //左拿下，下拿右，右拿上，上拿左
-                rotateLine(magicBlock, 1, side, 2, -1); //左面: 右邊往上
+                rotateLine(magicBlock, 6, side, 2, 0);  //左面: 右邊往上
                 rotate(&magicBlock[1], 0, 1);           //前面向右旋轉
             }
         }
