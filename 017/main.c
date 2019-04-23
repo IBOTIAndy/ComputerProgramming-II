@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //017 專題老師志願序
-//2019/04/19 IBOTIAndy AM. 01:10
+//2019/04/23 IBOTIAndy PM. 10:30
 typedef struct{                 //志願清單
     char studentName[10];       //學生名稱
     char studentOrder[10][10];  //學生志願序
@@ -46,11 +46,96 @@ void input(volunteerOrder *list){   //輸入
 //---------/input----------
 
 //-----------run-----------
-void teacherSelect(){}
 
-void studentSelect(){}
+//-------volunteer-------
+//-----commonTeacher-----
+void resetCommonTeacher(int commonTeacher[], int n){    //重置commonTeacher
+    int i=0;
+    for(i=0; i < n; i++){
+        commonTeacher[i] = 0;
+    }
+}
 
-void run(volunteerOrder list){}
+int selectCommonTeacher(volunteerOrder *list, int i, int j, int commonTeacher[]){   //找選到共同的老師
+    char teacherName=' ';
+    int have=0;
+    resetCommonTeacher(commonTeacher, list->studentN);  //重置共同老師的紀錄
+    commonTeacher[i] = 1;                               //目前的位置先記錄為1
+    teacherName = list->studentOrder[j][i];             //紀錄老師的名字
+    j = j + 1;                                          //移到下一位學生的位置
+    while(j < list->studentN){                          //直到全部學生的志願都檢查過
+        if(list->studentOrder[j][i] == teacherName){    //如果找到有選到一樣的老師
+            commonTeacher[j] = 1;                       //學生位置標記為1
+            have = 1;                                   //紀錄為有共同老師
+        }
+        j = j + 1;
+    }
+    return have;
+}
+//----/commonTeacher-----
+
+//-----setAns-----
+void cleanStudentTeacher(volunteerOrder *list, char studentName, char teacherName, int n){  //志願序上，清除以選到的學生與老師
+    int i=0, j=0;
+    for(j=0; j < n; j++){
+        for(i=0; i < n; i++){
+            if(list->studentOrder[j][i] == teacherName){    //如果學生清單上的老師已經選到
+                list->studentOrder[j][i] = '-';                 //清除(用 '-' 代替)
+            }                                               //
+            if(list->teacherOrder[j][i] == studentName){    //如果老師清單上的學生已經被選到
+                list->teacherOrder[j][i] = '-';                 //清除(用 '-' 代替)
+            }                                               //
+        }
+    }
+}
+
+void findTeacher(volunteerOrder *list, int i, int j, char listOfResults[][2]){  //將學生分配給老師
+    listOfResults[j][0] = list->studentName[j];                                             //記錄學生
+    listOfResults[j][1] = list->studentOrder[j][i];                                         //紀錄老師
+    cleanStudentTeacher(list, listOfResults[j][0], listOfResults[j][1], list->studentN);    //將記錄過的老師從清單去除
+}
+//----/setAns-----
+
+void teacherSelect(volunteerOrder *list, char teacherName, char commonTeacher[], char listOfResults[][2]){ //老師選擇
+}
+
+void studentSelect(volunteerOrder *list, int j, char listOfResults[][2]){    //學生選擇
+    int commonTeacher[10]={0};      //紀錄存到相同老師的學生
+    int i=0;                        //j=目前的學生
+    for(j=0; j < list->studentN; j++){                      //找全部的學生-----------------------------------
+        if(list->studentOrder[j][i] != '-'){                    //如果這個老師還沒被選到-----------------   |
+            if(selectCommonTeacher(list, i, j, commonTeacher)){     //找看看有沒有共同的老師---------   |   |
+//                teacherSelect(list, commonTeacher, listOfResults);      //有共同老師，看老師選擇序  |   |   |
+            }                                                       //-------------------------------   |   |
+            else{                                                   //沒共同老師---------------------   |   |
+                findTeacher(list, i, j, listOfResults);                 //將學生配給老師            |   |   |
+            }                                                       //-------------------------------   |   |
+        }                                                       //---------------------------------------   |
+    }                                                       //-----------------------------------------------
+}
+
+void volunteerSelect(volunteerOrder *list, char listOfResults[][2]){    //搜尋志願序
+    int j=0;
+    for(j=0; j < list->teacherM; j++){          //找全部志願序----
+        studentSelect(list, j, listOfResults);      //學生選擇   |
+    }                                           //----------------
+}
+//------/volunteer-------
+
+//----------output----------
+void output(char ans[][2], int n){
+    int i=0;
+    for(i=0; i < n; i++){
+        printf("%c->%c\n", ans[i][0], ans[i][1]);
+    }
+}
+//---------/output----------
+
+void run(volunteerOrder list){
+    char listOfResults[10][2]={{""}};       //存答案結果 [0]=學生，[1]=老師
+    volunteerSelect(&list, listOfResults);  //依照志願序搜尋
+    output(listOfResults, list.studentN);   //輸出答案
+}
 //----------/run-----------
 
 //----------test-----------
