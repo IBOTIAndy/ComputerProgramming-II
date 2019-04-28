@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //017 專題老師志願序
-//2019/04/23 IBOTIAndy PM. 10:30
+//2019/04/24 IBOTIAndy PM. 09:13
 typedef struct{                 //志願清單
     char studentName[10];       //學生名稱
     char studentOrder[10][10];  //學生志願序
@@ -52,7 +52,7 @@ void input(volunteerOrder *list){   //輸入
 int notHaveTeacher(volunteerOrder *list, char studentName){ //該學生還沒有老師
     int i=0, j=0;
     for(i=0; i < list->studentN; i++){  //找老師的選擇序
-        if(list->teacherOrder[i][j] == studentName){    //如果找到這個學生
+        if(list->teacherOrder[j][i] == studentName){    //如果找到這個學生
             return 1;                                   //這個學生還沒找到老師
         }
     }                                   //如果沒找到這個學生
