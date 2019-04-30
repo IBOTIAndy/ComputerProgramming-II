@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 //020 賓果遊戲
-//2019/04/30 AM.02:25 IBOTIAndy
+//2019/04/30 PM.02:25 IBOTIAndy
 typedef struct{
     int bingoBoard[500][500];   //賓果盤
     int x;                      // x 座標的最大值
