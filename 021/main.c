@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //021 結構(structure)練習，圖形計算
-//2019/05/06 AM. 00:36 IBOTIAndy
+//2019/05/06 AM. 00:43 IBOTIAndy
 //----------struct_shape----------
 typedef struct{
     int radius;     //半徑
@@ -161,19 +161,24 @@ int mathTriangle(triangle_s *triangle){   //計算三角形的周長
 }
 
 int mathPerimeter(shape_s *shape){ //計算周長
+    int ans=0;
     if(shape->name == 'C'){         //圓形
-        return mathCircle(&(shape->shape.C));
+        ans = mathCircle(&(shape->shape.C));
+        shape->perimeter = ans; //紀錄周長
     }
     else if(shape->name == 'R'){    //矩形
-        return mathRectangle(&(shape->shape.R));
+        ans = mathRectangle(&(shape->shape.R));
+        shape->perimeter = ans; //紀錄周長
     }
     else if(shape->name == 'S'){    //正方形
-        return mathSquare(&(shape->shape.S));
+        ans = mathSquare(&(shape->shape.S));
+        shape->perimeter = ans; //紀錄周長
     }
     else if(shape->name == 'T'){    //三角形
-        return mathTriangle(&(shape->shape.T));
+        ans = mathTriangle(&(shape->shape.T));
+        shape->perimeter = ans; //紀錄周長
     }
-    return 0;
+    return ans;
 }
 
 void math(shapeArray_s *shapes){    //計算
@@ -185,7 +190,13 @@ void math(shapeArray_s *shapes){    //計算
 }
 //---------/math------------------
 
-void output(shapeArray_s shapes){}
+void output(shapeArray_s shapes){   //輸出周長
+    int i=0;
+    for(i=0; i < shapes.n; i++){                    //將全部圖形
+        printf("%d\n", shapes.shape[i].perimeter);  //輸出周長
+    }
+    printf("%d", shapes.totalPerimeter);    //輸出全部的周長
+}
 
 int main(){
     shapeArray_s shapes;    //一個放圖形的陣列
