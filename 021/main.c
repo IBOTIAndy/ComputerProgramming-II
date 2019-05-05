@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //021 結構(structure)練習，圖形計算
-//2019/05/05 PM. 08:09 IBOTIAndy
+//2019/05/06 AM. 00:36 IBOTIAndy
 //----------struct_shape----------
 typedef struct{
     int radius;     //半徑
@@ -135,7 +135,54 @@ void inputView(shapeArray_s shapes){    //檢查輸入有沒有錯
 //---------/input-----------------
 
 //----------math------------------
-void math(shapeArray_s *shapes){}
+int mathCircle(circle_s *circle){   //計算圓形的周長
+    int PI=0, ans=0;
+    PI = 4;             //PI 設為 4
+    ans = circle->radius * 2 * PI; //直徑 * PI
+    return ans;
+}
+
+int mathRectangle(rectangle_s *rectangle){   //計算矩形的周長
+    int ans=0;
+    ans = (rectangle->length * 2) + (rectangle->width * 2); //長 + 長 + 寬 + 寬
+    return ans;
+}
+
+int mathSquare(square_s *square){   //計算正方形的周長
+    int ans=0;
+    ans = square->length * 4;    //邊長 * 4
+    return ans;
+}
+
+int mathTriangle(triangle_s *triangle){   //計算三角形的周長
+    int ans=0;
+    ans = triangle->bottom + triangle->height + triangle->hypotenuse;    //三邊的和
+    return ans;
+}
+
+int mathPerimeter(shape_s *shape){ //計算周長
+    if(shape->name == 'C'){         //圓形
+        return mathCircle(&(shape->shape.C));
+    }
+    else if(shape->name == 'R'){    //矩形
+        return mathRectangle(&(shape->shape.R));
+    }
+    else if(shape->name == 'S'){    //正方形
+        return mathSquare(&(shape->shape.S));
+    }
+    else if(shape->name == 'T'){    //三角形
+        return mathTriangle(&(shape->shape.T));
+    }
+    return 0;
+}
+
+void math(shapeArray_s *shapes){    //計算
+    int i=0, total=0;
+    for(i=0; i < shapes->n; i++){                           //直到輸入完 (圖形數量)
+        total = total + mathPerimeter(&(shapes->shape[i])); //計算圖形的周長
+    }
+    shapes->totalPerimeter = total; //將總周長記錄下來
+}
 //---------/math------------------
 
 void output(shapeArray_s shapes){}
