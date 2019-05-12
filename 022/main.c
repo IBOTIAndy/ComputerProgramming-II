@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //022 結構(structure)練習2，邏輯閘
-//2019/05/12 PM. 08:57 IBOTIAndy
+//2019/05/12 PM. 09:05 IBOTIAndy
 //----------typedef----------
 typedef struct gate_s{  //邏輯閘
     char name;          //邏輯名稱
@@ -113,17 +113,19 @@ void run(gate_t *P_Gate, gate_t *Q_Gate, gate_t *R_Gate){   //運算
 //---------/run--------------
 
 //----------output-----------
-void output(gate_t P_Gate, gate_t Q_Gate, gate_t R_Gate){}
+void output(gate_t P_Gate, gate_t Q_Gate, gate_t R_Gate){   //輸出
+    printf("%d,%d,%d", P_Gate.y, Q_Gate.y, R_Gate.y);       //輸出三個邏輯閘的輸出
+}
 //----------output-----------
 
 int main(){
     gate_t P_Gate={' ', -1, -1, -1};
     gate_t Q_Gate={' ', -1, -1, -1};
     gate_t R_Gate={' ', -1, -1, -1};
-    input(&P_Gate, &Q_Gate, &R_Gate);
-//    inputView(P_Gate, Q_Gate, R_Gate);
-    run(&P_Gate, &Q_Gate, &R_Gate);
-    output(P_Gate, Q_Gate, R_Gate);
+    input(&P_Gate, &Q_Gate, &R_Gate);   //輸入
+//    inputView(P_Gate, Q_Gate, R_Gate);  //檢查輸入結果
+    run(&P_Gate, &Q_Gate, &R_Gate);     //邏輯閘運算
+    output(P_Gate, Q_Gate, R_Gate);     //輸出
 //    printf("Hello world!\n");
     return 0;
 }
