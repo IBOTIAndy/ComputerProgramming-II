@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //023 模擬讀檔
-//2019/05/15 PM. 02:52 IBOTIAndy
+//2019/05/15 PM. 04:43 IBOTIAndy
 //----------typedef----------
 typedef struct file_s{
     char name[50];
@@ -45,10 +45,10 @@ void write(file_t file[]){  //寫檔 (寫入模式)
     int list[100]={0};          //暫存的資料
     int i=0;
     scanf("%c", &name[0]);      //去除換行字元
-    printf("Mod: write:\n");    //UI
-    printf("name: ");           //UI
+    printf("Mod: write:\n");    //UI 目前模式
+    printf("name: ");           //UI 要寫入的名稱
     gets(name);                 //取檔案名稱
-    printf("data:\n");          //UI
+    printf("data:\n");          //UI 要寫入的資料
     while(1){                   //寫入資料
         scanf("%d", &list[i]);  //將資料寫入暫存區
         if(list[i] == -1){      //如果是結束符號
@@ -78,7 +78,7 @@ int findFile(file_t file[], char name[], int *i){   //找檔案
     return 0;                                       //如果都沒找到 回傳沒找到 (if(0))
 }
 
-//----------output-----------
+//-----output-----
 void changeToBinary(int data, int binary[], int n){ //將十進位轉為二進位
     int i=0;
     for(i=0; i < n; i++){       //直到做了 n 次(指定的 n bit)
@@ -107,7 +107,7 @@ void output(file_t file){   //輸出
         outputBinary(binary, 8);                    //輸出二進位狀態的資料
     }
 }
-//---------/output-----------
+//----/output-----
 
 void read(file_t file[]){           //讀檔 (讀取模式)
     int i=0;
@@ -128,7 +128,30 @@ void read(file_t file[]){           //讀檔 (讀取模式)
 //---------/read-------------
 
 //----------edit-------------
-void edit(){}
+void editFile(file_t *file){    //改變檔案內的資料
+    int m=0;                            //第 m 個資料
+    printf("m: ");                      //UI 第幾筆資料
+    scanf("%d", &m);                    //輸入要改第幾個資料
+    printf("change to: ");              //UI 改為
+    scanf("%d", &file->list[m - 1]);    //將檔案改為新的值
+
+}
+
+void edit(file_t file[]){   //改檔 (更改內容)
+    int i=0;
+    char name[50];
+    scanf("%c", &name[0]);          //去除換行
+    printf("Mod: edit:\n");         //UI 目前模式
+    printf("name: ");               //UI 檔案名稱是甚麼
+    gets(name);                     //輸入檔案名稱
+    printf("\n");                   //UI 換行
+    if(findFile(file, name, &i)){   //如果找到檔案
+        editFile(&(file[i]));       //更改
+    }
+    else{                           //如果沒找到檔案
+        printf("Error\n");          //輸出錯誤
+    }
+}
 //---------/edit-------------
 
 void run(file_t file[]){
@@ -148,12 +171,12 @@ void run(file_t file[]){
             read(file);
         }
         else if(select == 3){
-//            edit(file);
+            edit(file);
         }
         else if(select == 4){
             break;
         }
-        printf("\n");
+        printf("\n");               //UI
     }
 }
 
