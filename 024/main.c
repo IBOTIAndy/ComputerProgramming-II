@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //024 模擬 Linux Command-Line Interface
-//2019/05/19 AM. 03:12 IBOTIAndy
+//2019/05/19 PM. 02:55 IBOTIAndy
 //----------typedef----------
 typedef struct file_s{  //檔案
     char name[20];      //檔案名稱
@@ -24,11 +24,12 @@ typedef struct commandLine_s{       //指令
     parameterList_t parameterList;  //參數s
 }commandLine_t;
 
-enum type{not_e, touch_e, vim_e, cat_e, head_e, tail_e, exit_e};
+enum type{not_e, touch_e, vim_e, cat_e, head_e, tail_e, rm_e, ls_e, exit_e};
 //---------/typedef----------
 
 //----------run--------------
 //-------inputSet--------
+//-----strtok-----
 void parameterCut(parameterList_t *parameterList){  //切割參數
     int i=0;
     parameterList->parameter[i] = strtok(NULL, " ");        //先切一次
@@ -43,6 +44,7 @@ void stringCut(char in[], commandLine_t *list){  //字串切割
     list->command = strtok(in, " ");        //第一次切割，取指令
     parameterCut(&(list->parameterList));   //切割參數
 }
+//----/strtok-----
 
 int selectType(char *command){  //選擇要使用的指令
     //因為使用列舉 所以直接回傳那個變數 (27行)
@@ -61,6 +63,12 @@ int selectType(char *command){  //選擇要使用的指令
     else if(!strcmp(command, "tail")){  //差看檔案 從後面開始
         return tail_e;
     }
+    else if(!strcmp(command, "rm")){    //移除檔案
+        return rm_e;
+    }
+    else if(!strcmp(command, "ls")){    //列出全部檔案
+        return ls_e;
+    }
     else if(!strcmp(command, "exit")){  //離開
         return exit_e;
     }
@@ -69,7 +77,19 @@ int selectType(char *command){  //選擇要使用的指令
 //------/inputSet--------
 
 //-------operation-------
-void create(fileList_t fileList, parameterList_t parameterList){}
+//-----createFile-----
+void createNewFile(file_t *file, char *fileName){   //建立新的檔案
+    strcpy(file->name, fileName);   //將檔名寫入檔案
+}
+
+void create(fileList_t *fileList, parameterList_t parameterList){   //建立檔案，需支援一次建立多個檔案
+    int i=0;
+    for(i=0; i < parameterList.n; i++){                                                 //直到所有參數都使用完
+        createNewFile(&(fileList->file[fileList->n + i]), parameterList.parameter[i]);  //建立新的檔案 (檔案位置, 參數)
+    }
+    fileList->n = fileList->n + parameterList.n;    //檔案總數 = 目前檔案數 + 參數數量
+}
+//----/createFile-----
 
 void write(fileList_t fileList, parameterList_t parameterList){}
 
@@ -78,7 +98,22 @@ void read(fileList_t fileList, parameterList_t parameterList){}
 void readHead(fileList_t fileList, parameterList_t parameterList){}
 
 void readTail(fileList_t fileList, parameterList_t parameterList){}
+
+void removeFile(fileList_t *fileList, parameterList_t parameterList){}
+
+void listFiles(fileList_t fileList){}
 //------/operation-------
+
+//-------view------------
+void viewFileData(fileList_t fileList){
+    int i=0;
+    for(i=0; i < fileList.n; i++){
+        printf("%d.%s\n", i + 1, fileList.file[i].name);
+        printf("%s\n", fileList.file[i].data);
+    }
+    printf("\n");
+}
+//------/view------------
 
 void run(){
     fileList_t fileList={{{"", ""}}, 0};
@@ -90,7 +125,7 @@ void run(){
         stringCut(in, &commandLine);                //切割輸入
         select = selectType(commandLine.command);   //選擇要使用的指令
         if(select == touch_e){      //建立檔案
-            create(fileList, commandLine.parameterList);
+            create(&fileList, commandLine.parameterList);
         }
         else if(select == vim_e){   //檔案書寫
             write(fileList, commandLine.parameterList);
@@ -104,9 +139,16 @@ void run(){
         else if(select == tail_e){  //差看檔案 從後面開始
             readTail(fileList, commandLine.parameterList);
         }
+        else if(select == rm_e){    //移除檔案
+            removeFile(&fileList, commandLine.parameterList);
+        }
+        else if(select == ls_e){    //列出檔案列表
+            listFiles(fileList);
+        }
         else if(select == exit_e){  //結束
             break;
         }
+        viewFileData(fileList);     //檢查檔案用，看資料寫入正不正確
     }
 }
 //---------/run--------------
