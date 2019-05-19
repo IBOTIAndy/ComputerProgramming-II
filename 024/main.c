@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //024 模擬 Linux Command-Line Interface
-//2019/05/19 PM. 02:55 IBOTIAndy
+//2019/05/20 AM. 01:03 IBOTIAndy
 //----------typedef----------
 typedef struct file_s{  //檔案
     char name[20];      //檔案名稱
@@ -91,7 +91,73 @@ void create(fileList_t *fileList, parameterList_t parameterList){   //建立檔案，
 }
 //----/createFile-----
 
-void write(fileList_t fileList, parameterList_t parameterList){}
+//-----write----------
+int findFile(fileList_t *fileList, char *name){ //找到指定檔名的檔案
+    int i=0;
+    for(i=0; i < fileList->n; i++){                 //直到檔案找完
+        if(!strcmp(fileList->file[i].name, name)){  //如果找到檔案
+            return i;                               //回傳檔案位置
+        }
+    }           //沒找到檔案
+    return -1;  //回傳 -1
+}
+
+//---writeFile---
+void writeFile(file_t *file){   //寫入檔案
+    char in[50]="";
+    char data[200]="";
+    char enter[5]="";
+    int isChange=0;
+    int wait=0;
+    strcpy(enter, "\n");
+    wait = 1;
+    while(1){
+        gets(in);                       //輸入
+        if(wait){                       //如果還沒輸入 a ，等待
+            if(!strcmp(in, "a")){       //如果輸入了 "a"
+                wait = 0;               //等待結束
+            }
+        }
+        else if(!strcmp(in, ":w")){     //保存
+            strcpy(file->data, data);   //將資料寫入
+            isChange = 0;               //改為已保存
+        }
+        else if(!strcmp(in, ":q")){     //離開
+            break;                      //跳出迴圈
+        }
+        else if(!strcmp(in, ":q!")){    //強制離開
+            break;                      //跳出迴圈
+        }
+        else if(!strcmp(in, ":wq")){    //保存並離開
+            strcpy(file->data, data);   //將資料寫入
+            isChange = 0;               //改為已保存
+            break;                      //跳出迴圈
+        }
+        else if(!wait){                 //如果沒有在等待了
+            if(data[0] != '\0'){        //如果不是第一次寫入
+                strcat(data, enter);    //將換行紀錄到暫存
+            }
+            strcat(data, in);           //將資料紀錄到暫存
+            isChange = 1;               //改為以改動
+        }
+    }
+    if(isChange){           //如果沒有保存就離開
+        printf("error\n");  //輸出 error 錯誤
+    }
+}
+//--/writeFile---
+
+void write(fileList_t *fileList, parameterList_t parameterList){    //寫檔
+    int i=0;
+    i = findFile(fileList, parameterList.parameter[0]); //尋找並紀錄檔案位置
+    if(i == -1){                                                //如果沒找到
+        printf("can't find %s.\n", parameterList.parameter[0]); //輸出沒找到檔案
+    }
+    else{                                                       //如果有找到
+        writeFile(&(fileList->file[i]));                        //準備寫檔
+    }
+}
+//----/write----------
 
 void read(fileList_t fileList, parameterList_t parameterList){}
 
@@ -105,11 +171,11 @@ void listFiles(fileList_t fileList){}
 //------/operation-------
 
 //-------view------------
-void viewFileData(fileList_t fileList){
+void viewFileData(fileList_t fileList){ //檢查用，顯示全部的檔案
     int i=0;
-    for(i=0; i < fileList.n; i++){
-        printf("%d.%s\n", i + 1, fileList.file[i].name);
-        printf("%s\n", fileList.file[i].data);
+    for(i=0; i < fileList.n; i++){                          //直到全部檔案輸出完
+        printf("%d.%s\n", i + 1, fileList.file[i].name);    //輸出 ("第幾個檔案". "檔案名稱")
+        printf("%s\n", fileList.file[i].data);              //輸出資料
     }
     printf("\n");
 }
@@ -128,7 +194,7 @@ void run(){
             create(&fileList, commandLine.parameterList);
         }
         else if(select == vim_e){   //檔案書寫
-            write(fileList, commandLine.parameterList);
+            write(&fileList, commandLine.parameterList);
         }
         else if(select == cat_e){   //查看檔案
             read(fileList, commandLine.parameterList);
