@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //027 助教改作業
-//2019/05/26 PM. 00:54 IBOTIAndy
+//2019/05/26 PM. 09:34 IBOTIAndy
 //----------typedef----------
 typedef struct homework_s{      //作業結構
     char name[10];              //作業的擁有者
@@ -32,13 +32,48 @@ homework_t* input(homework_t *topHW){   //輸入
         topHW = topInList(topHW, newHW);            //放入陣列中 回傳最上方的位置
         gets(inName);                               //繼續輸入
     }
-    return topHW;
+    return topHW;                           //回傳最上面那份作業
 }
 //---------/input------------
+
+//----------run--------------
+//-------makeUpHW-------
+homework_t* makeUpHW(homework_t *topHW, char *name){    //補交作業
+    homework_t *newHW=NULL;
+    newHW = malloc(sizeof(homework_t)); //建立新的空間給新作業
+    strcpy(newHW->name, name);          //將輸入的名稱
+    newHW->isDelay = 1;                 //將是否遲交設定為 True
+    topHW = topInList(topHW, newHW);    //放入陣列中 回傳最上方的位置
+    return topHW;                       //回傳最上面那份作業
+}
+//------/makeUpHW-------
+
+void run(homework_t *topHW){
+    char in[20]="";
+    char *select, *name;
+    gets(in);
+    while(1){
+        select = strtok(in, " ");           //切出選擇的模式
+        if(!strcmp(select, "1")){           //補交作業 (push) 記錄補交的作業，並記錄遲交
+            name = strtok(NULL, " ");       //切割出學生名稱
+            topHW = makeUpHW(topHW, name);  //補交作業
+        }
+        else if(!strcmp(select, "2")){      //改作業 (pop) 輸出是否遲交作業。如果改完，輸出 Empty
+//            correctionHW(topHW);
+        }
+        else if(!strcmp(select, "3")){      //下班，印出還沒改的作業的學生名稱、遲交狀況，如果作業改完，輸出 Empty
+//            offWork(topHW);
+            break;
+        }
+        gets(in);
+    }
+}
+//----------run--------------
 
 int main(){
     homework_t *topHW=NULL; //陣列的開頭
     topHW = input(topHW);   //輸入 重複輸入名稱 直到輸入 -1 結束
+    run(topHW);             //開始改作業
 //    printf("Hello world!\n");
     return 0;
 }
