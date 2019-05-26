@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //027 助教改作業
-//2019/05/26 PM. 09:34 IBOTIAndy
+//2019/05/26 PM. 11:30 IBOTIAndy
 //----------typedef----------
 typedef struct homework_s{      //作業結構
     char name[10];              //作業的擁有者
@@ -13,7 +13,7 @@ typedef struct homework_s{      //作業結構
 
 //---setList---
 homework_t* topInList(homework_t *topHW, homework_t *newHW){    //從上方放入陣列
-    if(topHW != NULL){          //如果陣列不是空的
+    if(topHW != NULL){          //如果陣列不是空的@#$%^&*&^%$#%^&*()@*$&^%@^#&
         newHW->next = topHW;    //將新作業的下一個指向最上面
     }                                                           //就像直接把紙放在最上面
     return newHW;               //回傳新作業的位置
@@ -46,8 +46,30 @@ homework_t* makeUpHW(homework_t *topHW, char *name){    //補交作業
     topHW = topInList(topHW, newHW);    //放入陣列中 回傳最上方的位置
     return topHW;                       //回傳最上面那份作業
 }
-//------/makeUpHW-------
+//------/makeUpHW-----------
 
+//-----output-----
+void output(homework_t *HW){            //輸出作業狀況
+    printf("%s's HW is ", HW->name);    //輸出作業的擁有者
+    if(!HW->isDelay){                   //如果作業沒有遲交
+        printf("not ");                 //輸出 not delay
+    }
+    printf("delay\n");                  //
+}
+
+//-------correctionHW-------
+homework_t* correctionHW(homework_t *topHW){    //改作業
+    homework_t *newTop=NULL;
+    if(topHW == (homework_t*)NULL){          //如果已經沒有作業了
+        printf("Empty\n");      //輸出空
+        return topHW;           //回傳原本的位置
+    }
+    newTop = topHW->next;       //新的頂層為下一份作業
+    output(topHW);              //輸出最上層的作業
+    return newTop;              //回傳新的頂層
+}
+//------/correctionHW-------
+//----/output-----
 void run(homework_t *topHW){
     char in[20]="";
     char *select, *name;
@@ -59,7 +81,7 @@ void run(homework_t *topHW){
             topHW = makeUpHW(topHW, name);  //補交作業
         }
         else if(!strcmp(select, "2")){      //改作業 (pop) 輸出是否遲交作業。如果改完，輸出 Empty
-//            correctionHW(topHW);
+            topHW = correctionHW(topHW);    //改作業
         }
         else if(!strcmp(select, "3")){      //下班，印出還沒改的作業的學生名稱、遲交狀況，如果作業改完，輸出 Empty
 //            offWork(topHW);
