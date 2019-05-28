@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //027 助教改作業
-//2019/05/28 PM. 02:50 IBOTIAndy
+//2019/05/28 PM. 03:21 IBOTIAndy
 //----------typedef----------
 typedef struct homework_s{      //作業結構
     char name[10];              //作業的擁有者
@@ -77,6 +77,21 @@ void correctionHW(homeworkStack_t *stack){  //改作業
     }
 }
 //------/correctionHW-------
+
+//-------offWork------------
+void offWork(homeworkStack_t *stack){   //下班
+    homework_t *nextHW=NULL;
+    if(stack->root == NULL){    //如果已經空了
+        printf("Empty\n");      //    輸出空
+    }
+    while(stack->root != NULL){     //直到堆疊清空
+        output(stack->root);        //    輸出作業資訊
+        nextHW = stack->root->next; //    記錄下一份作業
+        free(stack->root);          //    將目前的作業刪除
+        stack->root = nextHW;       //    頂層指向下一份作業
+    }
+}
+//------/offWork------------
 //----/output-----
 void run(homeworkStack_t *stack){
     char in[20]="";
@@ -92,8 +107,8 @@ void run(homeworkStack_t *stack){
             correctionHW(stack);        //改作業
         }
         else if(!strcmp(select, "3")){  //下班，印出還沒改的作業的學生名稱、遲交狀況，如果作業改完，輸出 Empty
-//            offWork(topHW);
-            break;
+            offWork(stack);             //下班
+            break;                      //離開
         }
         gets(in);
     }
