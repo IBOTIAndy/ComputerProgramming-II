@@ -27,7 +27,7 @@ printf("\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
 如果queue存在，但queue裡面是空的話 要printf("Queue Name:名稱 Queue Size:長度 Queue Element:Queue is empty", queue->name, count);  
 
 ### 6. Exit 
-
+離開重複輸入  
 
 ## Sample Input: 
 1  

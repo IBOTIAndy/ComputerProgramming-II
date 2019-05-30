@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //028 Linked list Queue實作
-//2019/05/30 PM. 10:52 IBOTIAndy
+//2019/05/30 PM. 11:02 IBOTIAndy
 //----------typedef----------
 typedef struct element_s{   //元素結構
     int data;               //元素
@@ -198,6 +198,40 @@ void mergeQueue(queueList_t *queueList){    //連接兩個 Queue
 }
 //------/mergeQueue-----------
 
+//-------printAllQueue--------
+void printElement(element_t *currently){    //輸出資料
+    while(currently != NULL){           //直到資料輸出完
+        printf("%d ", currently->data); //輸出資料
+        currently = currently->next;    //指向下一個資料
+    }
+}
+
+void printAllQueue(queueList_t *queueList){ //輸出全部的 Queue
+    queue_t *currently=NULL;
+    if(queueList->root == NULL){            //如果甚麼都沒有
+        printf("Isn't have any queue\n");   //
+    }
+    else{
+        currently = queueList->root;                    //指向第一個 Queue
+        printf("****************************************\n");
+        while(currently != NULL){                       //全部輸出
+            printf("Queue Name:%s ", currently->name);  //輸出名稱
+            printf("Queue Size:%d ", currently->size);  //輸出資料大小
+            printf("Queue Element:");                   //輸出資料
+            if(currently->root == NULL){                //如果沒資料
+                printf("Queue is empty");               //輸出空
+            }
+            else{                                       //如果有資料
+                printElement(currently->root);          //輸出資料
+            }
+            printf("\n");                               //換行
+            currently = currently->next;                //做下一個 Queue
+        }
+        printf("****************************************\n");
+    }
+}
+//------/printAllQueue--------
+
 void run(queueList_t *queueList){
     char in[2]="";
     while(1){
@@ -215,7 +249,7 @@ void run(queueList_t *queueList){
             mergeQueue(queueList);      //合併 Qqueue
         }
         else if(!strcmp(in, "5")){  //Print_all_queue
-//            printAllQueue();
+            printAllQueue(queueList);   //輸出全部的 Queue
         }
         else if(!strcmp(in, "6")){  //Exit
             break;
