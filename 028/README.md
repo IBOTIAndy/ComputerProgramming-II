@@ -20,9 +20,9 @@ Queue 需設計成使用 Structure/Class，並使用串列 Link list實作。
 
 ### 5. PrintAllQueue 
 依序印出所有的Queue, Queue size, Queue element  
-printf("\****************************************");  
+printf("\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*");  
 printf("Queue Name:名稱 Queue Size:長度 Queue Element:", queue->name, count);  
-printf("\****************************************");  
+printf("\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*");  
 若不存在任何Queue，則printf(Isn't have any queue);  
 如果queue存在，但queue裡面是空的話 要printf("Queue Name:名稱 Queue Size:長度 Queue Element:Queue is empty", queue->name, count);  
 
