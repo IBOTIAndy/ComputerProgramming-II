@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //028 Linked list Queue實作
-//2019/05/30 PM. 04:19 IBOTIAndy
+//2019/05/30 PM. 09:16 IBOTIAndy
 //----------typedef----------
 typedef struct element_s{   //元素結構
     int data;               //元素
@@ -84,6 +84,7 @@ void createElement(queue_t *queue){ //建立元素
     scanf("%d%c", &data, &wrap);            //輸入資料(wrap 是去掉換行)
     newElement = createNewElement(data);    //新建元素，並將資料放入
     queue->root = setElementListTail(queue->root, newElement);  //將元素放入串列的尾部
+    queue->size = queue->size + 1;          //將資料數量 + 1
 }
 
 void enterQueueData(queueList_t *queueList){    //輸入 Queue 資料
@@ -94,11 +95,11 @@ void enterQueueData(queueList_t *queueList){    //輸入 Queue 資料
         printf("Queue %s isn't exist\n", name); //    輸出沒找到
         return;                                 //    跳出
     }
-    currently = queueList->root;            //紀錄第一個 Queue
-    while(currently != NULL){               //直到全部找完
-        if(!strcmp(currently->name, name)){ //如果找到要找的名稱
-            createElement(currently);       //    建立元素並放入
-            return;                         //    跳出
+    currently = queueList->root;                    //紀錄第一個 Queue
+    while(currently != NULL){                       //直到全部找完
+        if(!strcmp(currently->name, name)){         //如果找到要找的名稱
+            createElement(currently);               //    建立元素並放入
+            return;                                 //    跳出
         }
         currently = currently->next;        //找下一個 Queue
     }                                       //如果沒找到
@@ -106,18 +107,52 @@ void enterQueueData(queueList_t *queueList){    //輸入 Queue 資料
 }
 //------/enterQueueData-------
 
+//-------deleteQueue----------
+queue_t* findQueue(queue_t *root, char *name){  //找 Queue
+    queue_t *before=NULL;
+    queue_t *currently=NULL;
+    currently = root;                   //紀錄第一個 Queue
+    if(!strcmp(currently->name, name)){ //如果第一個就是
+        root = currently->next;         //    最上層
+        free(currently);                //    釋放記憶體
+        return root;                    //    跳出，回傳開頭
+    }
+    while(currently != NULL){               //直到全部找完
+        if(!strcmp(currently->name, name)){ //如果找到要找的名稱
+            before->next = currently->next; //    前一個的下一個改為目前的下一個(1->2,2->3) => (1->3)
+            free(currently);                //    釋放記憶體
+            return root;                    //    跳出，回傳開頭
+        }
+        before = currently;                 //前一個指向目前
+        currently = currently->next;        //找下一個 Queue
+    }                                       //如果沒找到
+    printf("Queue %s isn't exist\n", name); //輸出沒找到
+    return root;                            //跳出，回傳開頭
+}
+
+void deleteQueue(queueList_t *queueList){   //刪除 Queue
+    char name[20]="";
+    gets(name);                                 //輸入選擇的 Queue
+    if(queueList->root == NULL){                //如果沒有任何的 Queue
+        printf("Queue %s isn't exist\n", name); //    輸出沒找到
+        return;                                 //    跳出
+    }
+    queueList->root = findQueue(queueList->root, name); //找 Queue 並回傳開頭
+}
+//------/deleteQueue----------
+
 void run(queueList_t *queueList){
     char in[2]="";
     while(1){
         gets(in);
         if(!strcmp(in, "1")){       //Create_queue
-            createQueue(queueList); //建立一個 queue
+            createQueue(queueList);     //建立一個 Queue
         }
         else if(!strcmp(in, "2")){  //Enter_queue_data
-            enterQueueData(queueList);  //將資料輸入現有的 queue
+            enterQueueData(queueList);  //將資料輸入現有的 Queue
         }
         else if(!strcmp(in, "3")){  //Delete_queue
-//            deleteQueue();
+            deleteQueue(queueList);     //刪除 Queue
         }
         else if(!strcmp(in, "4")){  //Merge_queue
 //            mergeQueue();
