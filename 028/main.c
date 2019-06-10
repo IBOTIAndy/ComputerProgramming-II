@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //028 Linked list Queue實作
-//2019/05/30 PM. 11:02 IBOTIAndy
+//2019/06/10 AM. 09:00 IBOTIAndy
 //----------typedef----------
 typedef struct element_s{   //元素結構
     int data;               //元素
@@ -108,28 +108,32 @@ void enterQueueData(queueList_t *queueList){    //輸入 Queue 資料
 //------/enterQueueData-------
 
 //-------deleteQueue----------
-void queueIsEmpty(queue_t *queue){  //queue 是空的嗎?
-    if(queue->root == NULL){        //如果 queue 是空的
-        printf("Queue is empty");   //輸出 "Queue is empty"
+int queueIsEmpty(element_t *data){  //queue 是空的嗎?
+    if(data == NULL){               //如果 queue 是空的
+        printf("Queue is empty\n"); //輸出 "Queue is empty"
+        return 1;
     }
+    return 0;
+}
+
+element_t* deleteQueueRoot(queue_t *queue){
+    element_t *newRoot=NULL;
+    if(queueIsEmpty(queue->root)){        //如果 queue 是空的
+        return queue->root;
+    }
+    newRoot = queue->root->next;
+    queue->size = queue->size - 1;
+    return newRoot;
 }
 
 queue_t* deleteFindQueue(queue_t *root, char *name){  //找 Queue
     queue_t *before=NULL;
     queue_t *currently=NULL;
     currently = root;                   //紀錄第一個 Queue
-    if(!strcmp(currently->name, name)){ //如果第一個就是
-        root = currently->next;         //    最上層
-        queueIsEmpty(currently);        //    Queue 是空的嗎
-        free(currently);                //    釋放記憶體
-        return root;                    //    跳出，回傳開頭
-    }
-    while(currently != NULL){               //直到全部找完
-        if(!strcmp(currently->name, name)){ //如果找到要找的名稱
-            before->next = currently->next; //    前一個的下一個改為目前的下一個(1->2,2->3) => (1->3)
-            queueIsEmpty(currently);        //    Queue 是空的嗎
-            free(currently);                //    釋放記憶體
-            return root;                    //    跳出，回傳開頭
+    while(currently != NULL){                               //直到全部找完
+        if(!strcmp(currently->name, name)){                 //如果找到要找的名稱
+            currently->root = deleteQueueRoot(currently);   //    Queue
+            return root;                                    //    跳出，回傳開頭
         }
         before = currently;                 //前一個指向目前
         currently = currently->next;        //找下一個 Queue
@@ -145,7 +149,7 @@ void deleteQueue(queueList_t *queueList){   //刪除 Queue
         printf("Queue %s isn't exist\n", name); //    輸出沒找到
         return;                                 //    跳出
     }
-    queueList->root = deleteFindQueue(queueList->root, name); //找 Queue 並回傳開頭
+    deleteFindQueue(queueList->root, name);    //找 Queue 並回傳開頭
 }
 //------/deleteQueue----------
 
@@ -173,6 +177,28 @@ element_t* mergeElement(element_t *elementA, element_t *elementB){  //連結 Ele
     return elementA;                    //回傳開頭
 }
 
+queue_t* deleteQueueB(queue_t *root, char *name){
+    queue_t *before=NULL;
+    queue_t *currently=NULL;
+    currently = root;                   //紀錄第一個 Queue
+    if(!strcmp(currently->name, name)){ //如果第一個就是
+        root = currently->next;         //    最上層
+        free(currently);                //    釋放記憶體
+        return root;                    //    跳出，回傳開頭
+    }
+    while(currently != NULL){               //直到全部找完
+        if(!strcmp(currently->name, name)){ //如果找到要找的名稱
+            before->next = currently->next; //    前一個的下一個改為目前的下一個(1->2,2->3) => (1->3)
+            free(currently);                //    釋放記憶體
+            return root;                    //    跳出，回傳開頭
+        }
+        before = currently;                 //前一個指向目前
+        currently = currently->next;        //找下一個 Queue
+    }                                       //如果沒找到
+    printf("Queue %s isn't exist\n", name); //輸出沒找到
+    return root; //跳出，回傳開頭
+}
+
 void mergeQueue(queueList_t *queueList){    //連接兩個 Queue
     queue_t *queueA=NULL, *queueB=NULL;
     int canWork=0;
@@ -193,7 +219,7 @@ void mergeQueue(queueList_t *queueList){    //連接兩個 Queue
     if(canWork){                                                    //如果可以運作
         queueA->root = mergeElement(queueA->root, queueB->root);    //連接兩個 Element 串列
         queueA->size = queueA->size + queueB->size;                 //串列長度相加
-        queueList->root = deleteFindQueue(queueList->root, nameB);  //移除 QueueB
+        queueList->root = deleteQueueB(queueList->root, nameB);     //移除 QueueB
     }
 }
 //------/mergeQueue-----------
@@ -208,12 +234,12 @@ void printElement(element_t *currently){    //輸出資料
 
 void printAllQueue(queueList_t *queueList){ //輸出全部的 Queue
     queue_t *currently=NULL;
+    printf("****************************************\n");
     if(queueList->root == NULL){            //如果甚麼都沒有
         printf("Isn't have any queue\n");   //
     }
     else{
         currently = queueList->root;                    //指向第一個 Queue
-        printf("****************************************\n");
         while(currently != NULL){                       //全部輸出
             printf("Queue Name:%s ", currently->name);  //輸出名稱
             printf("Queue Size:%d ", currently->size);  //輸出資料大小
@@ -227,8 +253,8 @@ void printAllQueue(queueList_t *queueList){ //輸出全部的 Queue
             printf("\n");                               //換行
             currently = currently->next;                //做下一個 Queue
         }
-        printf("****************************************\n");
     }
+    printf("****************************************\n");
 }
 //------/printAllQueue--------
 
