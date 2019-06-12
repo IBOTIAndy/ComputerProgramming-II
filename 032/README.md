@@ -1,4 +1,4 @@
-#binary tree 
+# binary tree 
 以data大小為依據，左子樹小於等於根，右子樹大於根，建立二元樹。  
 //插入資料進二元樹  
 (1)void Insert(nodep_t *node, student_t key);  
@@ -6,7 +6,7 @@
 (2)void Inorder(nodep_t *node);  
 ---------------------
 
-## 輸入說明：
+### 輸入說明：
 p function(2)  
 i function(1)  
 5 欲插入的數字  
@@ -25,7 +25,8 @@ i
 p  
 e 結束輸入  
 ------------------------------
-## 輸出說明：
+
+### 輸出說明：
 p (印出):  
 (1)沒有tree 印出 null  
 (2)第一個插入的數字為 root  
@@ -34,7 +35,7 @@ p (印出):
 3 4 5 6 7 每個data中間有空白  
 ----------------------
 
-## Sample Input:
+### Sample Input:
 p  
 i  
 5  
@@ -60,7 +61,7 @@ p
 e  
 -------------------
 
-## Sample Output:
+### Sample Output:
 null  
 5  
 5 6  
