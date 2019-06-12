@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //032 creat binary tree for inorder 用中序做出二元樹
-//2019/06/12 AM. 11:55 IBOTIAndy
+//2019/06/12 PM. 02:15 IBOTIAndy
 //----------typedef----------
 typedef struct node_s{
     int data;
@@ -13,7 +13,27 @@ typedef struct tree_s{
     node_t *root;
 }tree_t;
 //---------/typedef----------
-void inorder(tree_t *tree){}
+
+//-----inorder-----
+void printTree(node_t *node){   //輸出
+    if(node == NULL){           //如果找完了
+        return;                 //回上一層
+    }
+    printTree(node->left);      //左
+    printf("%d ", node->data);  //中
+    printTree(node->right);     //右
+}
+
+void inorder(tree_t *tree){ //輸出
+    if(tree->root == NULL){     //如果沒有樹
+        printf("null");         //輸出 null
+    }
+    else{
+        printTree(tree->root);  //輸出樹
+    }
+    printf("\n");               //輸出完換行
+}
+//----/inorder-----
 
 node_t* creatNewNode(int data){
     node_t *newNode=NULL;
